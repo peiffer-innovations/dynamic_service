@@ -42,7 +42,7 @@ class NetworkRequest extends JsonClass {
       id: map['id'] ?? defaultId,
       method: map['method'],
       processBody: JsonClass.parseBool(map['processBody'], whenNull: true),
-      url: map['url'],
+      url: map['url'] ?? map['uri'],
     );
   }
 

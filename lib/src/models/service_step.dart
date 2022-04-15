@@ -28,7 +28,7 @@ abstract class ServiceStep extends JsonClass {
     var args = map['with'];
 
     if (args is Map) {
-      args = Map<String, String>.from(args);
+      args = Map<String, dynamic>.from(args);
     }
 
     result = registry.getStep(

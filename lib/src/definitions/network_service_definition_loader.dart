@@ -38,6 +38,7 @@ class NetworkServiceDefinitionLoader extends ServiceDefinitionLoader {
     if (definition == null || now - ttl.inMilliseconds < loaded) {
       try {
         var response = await _client.execute(
+          authorizer: _authorizer,
           jsonResponse: false,
           request: Request(
             headers: {

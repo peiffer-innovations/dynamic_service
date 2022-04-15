@@ -31,6 +31,7 @@ Future<void> main(List<String> args) async {
     refLoaders: [
       AssetRefLoader(),
       AssetRefLoader(protocol: 'output'),
+      NetworkRefLoader(),
     ],
     serviceDefinitionLoader: AssetServiceDefinitionLoader(
       path: 'service.yaml',

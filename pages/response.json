@@ -1,4 +1,4 @@
 {
-  "firstName": "${response.first.name}",
-  "lasttName": "${response.last.name}"
+  "firstName": "${first.name}",
+  "lasttName": "${last.name}"
 }

@@ -29,7 +29,11 @@ class DelayStep extends ServiceStep {
     var random = Random();
     var delay = random.nextInt(max - min) + min;
 
-    _logger.info('Waiting for [${delay / 1000.0}s]');
+    _logger.fine({
+      'message': 'Waiting for [${delay / 1000.0}s]',
+      'sessionId': context.request.sessionId,
+      'requestId': context.request.requestId,
+    });
 
     await Future.delayed(Duration(milliseconds: delay));
   }

@@ -14,7 +14,7 @@ class ValidateJwtStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var token = args['token'];
+    var token = args[StandardVariableNames.kNameToken];
     var key = args['key']?.toString();
 
     if (key == null) {
@@ -26,6 +26,7 @@ class ValidateJwtStep extends ServiceStep {
 
     var jwt = await JwtUtils.validate(token, key: key);
 
-    context.variables[args['variable'] ?? 'token'] = jwt.claims.toJson();
+    context.variables[args[StandardVariableNames.kNameVariable] ??
+        StandardVariableNames.kNameToken] = jwt.claims.toJson();
   }
 }

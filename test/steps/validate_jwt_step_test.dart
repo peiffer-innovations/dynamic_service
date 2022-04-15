@@ -26,7 +26,8 @@ void main() {
     );
     var step = ValidateJwtStep(args: {
       'key': r'${base64.encode(utf8.encode(key))}',
-      'token': r"${request['headers']['authorization']}",
+      StandardVariableNames.kNameToken:
+          r"${request['headers']['authorization']}",
     });
 
     await step.execute(context);

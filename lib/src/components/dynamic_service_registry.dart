@@ -1,5 +1,6 @@
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:dynamic_service/src/definitions/memory_service_definition_loader.dart';
+import 'package:dynamic_service/src/steps/load_network_step.dart';
 import 'package:logging/logging.dart';
 import 'package:template_expressions/template_expressions.dart';
 
@@ -53,8 +54,10 @@ class DynamicServiceRegistry {
   };
   final List<RefLoader> _refLoaders;
   final Map<String, StepBuilder> _steps = {
+    CreateJwtStep.kType: (args) => CreateJwtStep(args: args),
     DelayStep.kType: (args) => DelayStep(args: args),
     ETagStep.kType: (args) => ETagStep(args: args),
+    LoadNetworkStep.kType: (args) => LoadNetworkStep(args: args),
     SetResponseStep.kType: (args) => SetResponseStep(args: args),
     SetVariablesStep.kType: (args) => SetVariablesStep(args: args),
     ShuffleListStep.kType: (args) => ShuffleListStep(args: args),
@@ -88,9 +91,16 @@ class DynamicServiceRegistry {
     return result;
   }
 
-  Future<dynamic> loadRef(String ref) async {
+  Future<dynamic> loadRef(
+    String ref, {
+    ServiceContext? context,
+  }) async {
     try {
-      _logger.info('[loadRef]: attempting to load ref: [$ref]');
+      _logger.info({
+        'message': '[loadRef]: attempting to load ref: [$ref]',
+        'sessionId': context?.request.sessionId ?? '<internal>',
+        'requestId': context?.request.requestId ?? '<internal>',
+      });
       RefLoader? refLoader = _refLoaders.firstWhere(
         (loader) => loader.canLoad(ref),
       );

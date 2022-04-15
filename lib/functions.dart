@@ -28,9 +28,9 @@ Future<Response> function(Request request) async {
 
 FutureOr<Response> _process(Request request) async {
   Response? response;
+  var req = await ServiceRequest.fromRequest(request);
   try {
     var registry = DynamicServiceRegistry.defaultInstance;
-    var req = await ServiceRequest.fromRequest(request);
 
     var definition = await registry.serviceDefinitionLoader.load(registry);
 
@@ -46,10 +46,32 @@ FutureOr<Response> _process(Request request) async {
 
         if (context != null) {
           _logger.info(
-              '[functions]: Handler [${entry.id}] for [${request.method.toUpperCase()}] [${request.url.path}].');
+            '[functions]: Handler [${entry.id}] for [${request.method.toUpperCase()}] [${request.url.path}].',
+          );
           var steps = await entry.stepLoader.load(registry: registry);
           for (var step in steps) {
-            await step.execute(context);
+            var startTime = DateTime.now().millisecondsSinceEpoch;
+            try {
+              await step.execute(context);
+            } catch (e, stack) {
+              if (e is ServiceException) {
+                rethrow;
+              }
+              throw ServiceException(
+                body: 'Unknown error in step: [${step.type}]',
+                cause: e,
+                stack: stack,
+              );
+            } finally {
+              var duration =
+                  (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
+
+              _logger.fine({
+                'message': '[${step.type}]: executed in: [${duration}s]',
+                'sessionId': req.sessionId,
+                'requestId': req.requestId,
+              });
+            }
           }
 
           response = context.response.toResponse();
@@ -75,13 +97,17 @@ FutureOr<Response> _process(Request request) async {
       _logger.severe(json.encode(e.toJson()), e, e.stack ?? stack);
       response = Response(
         e.code,
-        body: e.body ?? '$e\n$stack',
+        body: e.body ?? '$e\n${e.stack ?? stack}',
         headers: {
           'Content-Type': 'text/plain',
         },
       );
     } else {
-      _logger.severe('Uncaught error', e, stack);
+      _logger.severe({
+        'message': 'Uncaught error',
+        'sessionId': req.sessionId,
+        'requestId': req.requestId,
+      }, e, stack);
       response = Response(
         500,
         body: '$e\n$stack',

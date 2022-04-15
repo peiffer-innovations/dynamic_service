@@ -39,7 +39,7 @@ class LoadNetworkStep extends ServiceStep {
       );
     }
 
-    var variableName = args['variable'] ?? 'load_network_responses';
+    var variableName = args[StandardVariableNames.kNameVariable] ?? kType;
     var results = <String, dynamic>{};
 
     var futures = <Future>[];
@@ -90,7 +90,7 @@ class LoadNetworkStep extends ServiceStep {
           var endTime = DateTime.now().millisecondsSinceEpoch;
           var duration = (endTime - startTime) / 1000.0;
           _logger.fine(
-            '[$kType]: loaded url: [${request.url}] in [${duration}s',
+            '[$kType]: loaded url: [${request.url}] in [${duration}s]',
           );
         }
       }();

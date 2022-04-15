@@ -24,14 +24,18 @@ class SetVariablesStep extends ServiceStep {
     if (ref == null) {
       context.variables.addAll(args);
     } else {
-      var variable = args['variable-name'] ?? args['variableName'];
-      var data = await context.registry.loadRef(ref);
+      var variable = args[StandardVariableNames.kNameVariable];
+      var data = await context.registry.loadRef(ref, context: context);
       try {
         if (data is Map || data is Iterable) {
           data = json.encode(data);
         }
       } catch (e, stack) {
-        _logger.fine('Error attempting to JSON encode data', e, stack);
+        _logger.fine({
+          'message': 'Error attempting to JSON encode data',
+          'sessionId': context.request.sessionId,
+          'requestId': context.request.requestId,
+        }, e, stack);
       }
 
       if (data is String) {
@@ -44,7 +48,11 @@ class SetVariablesStep extends ServiceStep {
       try {
         data = json.decode(data);
       } catch (e, stack) {
-        _logger.fine('Error attempting to JSON decode data', e, stack);
+        _logger.fine({
+          'message': 'Error attempting to JSON decode data',
+          'sessionId': context.request.sessionId,
+          'requestId': context.request.requestId,
+        }, e, stack);
       }
 
       var variables = <String, dynamic>{};
@@ -61,7 +69,8 @@ class SetVariablesStep extends ServiceStep {
           context.variables[variable] = variables;
         }
       } else {
-        context.variables[variable ?? 'variable'] = data;
+        context.variables[variable ?? StandardVariableNames.kNameVariable] =
+            data;
       }
     }
   }

@@ -1,7 +1,9 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:dynamic_service/dynamic_service.dart';
-import 'package:logging/logging.dart';
+import 'package:json_class/json_class.dart';
+import 'package:template_expressions/template_expressions.dart';
+import 'package:yaon/yaon.dart' as yaon;
 
 class ShuffleListStep extends ServiceStep {
   ShuffleListStep({
@@ -12,41 +14,43 @@ class ShuffleListStep extends ServiceStep {
         );
   static const kType = 'shuffle_list';
 
-  static final Logger _logger = Logger('ShuffleListStep');
-
   @override
   Future<void> applyStep(
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var root = args['root']?.toString() ?? 'assets/';
-    if (!root.endsWith('/') && root.isNotEmpty) {
-      root = '$root/';
-    }
-    var assets = args['assets'];
-    if (assets is! Map) {
-      throw ServiceException(
-        body:
-            '[LoadAssetsStep]: unknown type on assets: [${assets?.runtimeType.toString()}].',
-      );
-    }
+    var random = Random.secure();
+    var list = yaon.parse(
+      Template(
+        syntax: context.registry.templateSyntax,
+        value: args['list'],
+      ).process(context: context.variables),
+    );
+    var passes = JsonClass.parseInt(
+          Template(
+            syntax: context.registry.templateSyntax,
+            value: args['passes'] ?? '1',
+          ).process(context: context.variables),
+        ) ??
+        1;
+    var variable = args[StandardVariableNames.kNameVariable] ?? kType;
 
-    for (var entry in assets.entries) {
-      var file = File('$root${entry.value}');
+    if (list is List) {
+      var result = List.from(list);
 
-      if (!file.existsSync()) {
-        throw ServiceException(
-          body:
-              '[LoadAssetsStep]: unable to load file: [${file.absolute.path}].',
-        );
+      for (var i = 0; i < passes; i++) {
+        for (var j = 0; j < result.length; j++) {
+          var input = random.nextInt(result.length);
+          var output = random.nextInt(result.length);
+
+          if (input != output) {
+            var temp = result[input];
+            result[input] = result[output];
+            result[output] = temp;
+          }
+        }
       }
-      var data = DynamicStringParser.parse(file.readAsStringSync());
-
-      context.variables[entry.key] = data;
-
-      _logger.fine(
-        'Loaded [${file.absolute.path}] to variable [${entry.key}]',
-      );
+      context.variables[variable] = result;
     }
   }
 }

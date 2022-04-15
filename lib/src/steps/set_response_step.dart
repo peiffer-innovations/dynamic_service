@@ -33,13 +33,17 @@ class SetResponseStep extends ServiceStep {
         body = File(file).readAsBytesSync().toList();
       }
     } else {
-      var data = await context.registry.loadRef(ref);
+      var data = await context.registry.loadRef(ref, context: context);
 
       if (data is Map || data is Iterable) {
         try {
           data = json.encode(data);
         } catch (e, stack) {
-          _logger.fine('Error attempting to JSON encode data', e, stack);
+          _logger.fine({
+            'message': 'Error attempting to JSON encode data',
+            'sessionId': context.request.sessionId,
+            'requestId': context.request.requestId,
+          }, e, stack);
         }
       }
 
