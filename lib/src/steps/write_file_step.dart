@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:crypto/crypto.dart';
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:logging/logging.dart';
 import 'package:template_expressions/template_expressions.dart';
@@ -52,5 +52,15 @@ class WriteFileStep extends ServiceStep {
         value: contents,
       ).process(context: context.variables);
     }
+
+    var file = File(path);
+    if (!file.existsSync()) {
+      file.createSync(recursive: true);
+    }
+    var bytes = contents is String ? utf8.encode(contents) : contents;
+
+    file.writeAsBytesSync(bytes);
+
+    _logger.fine('Wrote file: [${file.path}]');
   }
 }

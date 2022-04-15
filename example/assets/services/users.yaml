@@ -60,12 +60,12 @@ services:
       - type: set_variables
         with:
           greeting: "New User:"
-          first_name: ${json_path(body, "$.body.name.first")}
-          last_name: ${json_path(body, "$.body.name.last")}
+          first_name: "${json_path(body, '$.name.first')}"
+          last_name: "${json_path(body, '$.name.last')}"
       - type: write_file
         with:
-          path: output/${json_path(body, "$.body.name.first").toLowerCase()}/${json_path(body, "$.body.name.first").toLowerCase()}.json
-          $ref: assets/body/user.json
+          path: "output/${json_path(body, '$.name.first').toLowerCase()}_${json_path(body, '$.name.last').toLowerCase()}.json"
+          $ref: assets://body/user.json
 
   - id: get_user
     criteria:

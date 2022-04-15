@@ -2,9 +2,11 @@ import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
 import 'package:logging/logging.dart';
 import 'package:rest_client/rest_client.dart' as rc;
+import 'package:template_expressions/template_expressions.dart';
+import 'package:yaon/yaon.dart' as yaon;
 
-class LoadAssetsStep extends ServiceStep {
-  LoadAssetsStep({
+class LoadNetworkStep extends ServiceStep {
+  LoadNetworkStep({
     Map<String, dynamic>? args,
   }) : super(
           args: args,
@@ -21,10 +23,14 @@ class LoadAssetsStep extends ServiceStep {
   ) async {
     var async = JsonClass.parseBool(args['async']);
 
-    var argReqs = args['requests'];
+    var argReqs = args['requests'] ?? [args['request']];
     var requests = <NetworkRequest>[];
     var index = 0;
     for (var arg in argReqs) {
+      if (arg == null) {
+        throw ServiceException(body: '[$kType]: no request or requests set');
+      }
+
       requests.add(
         NetworkRequest.fromDynamic(
           arg,
@@ -45,22 +51,47 @@ class LoadAssetsStep extends ServiceStep {
         url: request.url,
       );
 
-      
       var future = () async {
         if (request.delay.inMilliseconds > 0) {
           await Future.delayed(request.delay);
         }
-        var response = await rc.Client().execute(
-          request: rcReq,
-          jsonResponse: request.processBody,
-        );
+        var startTime = DateTime.now().millisecondsSinceEpoch;
+        try {
+          var response = await rc.Client().execute(
+            request: rcReq,
+            jsonResponse: request.processBody,
+          );
 
-        if (!async) {
-          results[request.id] = {
-            'body': response.body,
-            'headers': response.headers,
-            'statusCode': response.statusCode,
-          };
+          if (!async) {
+            var body = response.body is String
+                ? yaon.parse(response.body)
+                : response.body;
+
+            if (body is String) {
+              var template = Template(
+                syntax: context.registry.templateSyntax,
+                value: body,
+              );
+              body = template.process(context: context.variables);
+            }
+            results[request.id] = {
+              'body': body,
+              'headers': response.headers,
+              'statusCode': response.statusCode,
+            };
+          }
+        } catch (e, stack) {
+          _logger.severe(
+            '[$kType]: error loading url: [${request.url}]',
+            e,
+            stack,
+          );
+        } finally {
+          var endTime = DateTime.now().millisecondsSinceEpoch;
+          var duration = (endTime - startTime) / 1000.0;
+          _logger.fine(
+            '[$kType]: loaded url: [${request.url}] in [${duration}s',
+          );
         }
       }();
 
@@ -68,6 +99,7 @@ class LoadAssetsStep extends ServiceStep {
     }
 
     if (!async) {
+      await Future.wait(futures);
       context.variables[variableName] = results;
     }
   }
