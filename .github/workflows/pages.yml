@@ -9,7 +9,6 @@ on:
 
 jobs:
   publish:
-    needs: build_number
     runs-on: ubuntu-latest
 
     steps:
