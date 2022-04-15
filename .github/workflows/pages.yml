@@ -1,0 +1,59 @@
+name: Pages Deployer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pages.yaml
+      - pages/**
+
+jobs:
+  build_number:
+    runs-on: ubuntu-latest
+    outputs:
+      buildnumber: ${{ steps.buildnumber.outputs.build_number }}
+    steps:
+      - name: Generate Build Number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+      - name: Build Number
+        run: echo "Build Number - $BUILD_NUMBER"
+
+  publish:
+    needs: build_number
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: source
+      - uses: actions/checkout@v3
+        with:
+          path: pages
+          ref: pages
+
+      - name: Setup Git
+        shell: bash
+        run: |
+          set -e
+
+          git config --global user.email "noop@github.com"
+          git config --global user.name "action"
+          git config --global url."https://action:${{ inputs.token }}@github.com/".insteadOf https://github.com/
+
+      - name: Deploy pages
+        run: |
+          set +e
+          rm -rf pages/pages
+
+          set -e
+
+          mkdir pages/pages
+          cp -R source/pages/* pages/pages
+
+          cd pages
+          git add .
+          git commit -m "[actions skip]: update pages"
+          git push

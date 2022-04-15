@@ -1,0 +1,37 @@
+services:
+  - id: post_greeting_list
+    criteria:
+      method: POST
+      path: /greeting/list
+      body:
+        - '${json_path(body, "$.name.first").isNotEmpty}'
+        - '${json_path(body, "$.name.last").isNotEmpty}'
+    steps:
+      - type: set_response
+        with:
+          body: "Howdy ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
+          content-type: text/plain
+
+  - id: post_greeting_string
+    criteria:
+      method: POST
+      path: /greeting/string
+      body: '${json_path(body, "$.name.first").isNotEmpty == true && json_path(body, "$.name.last").isNotEmpty == true}'
+    steps:
+      - type: set_response
+        with:
+          body: "Yo ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
+          content-type: text/plain
+
+  - id: post_greeting_map
+    criteria:
+      method: POST
+      path: /greeting/map
+      body:
+        '${json_path(body, "$.name.first")}': ".*\\S.*"
+        '${json_path(body, "$.name.last")}': ".*\\S.*"
+    steps:
+      - type: set_response
+        with:
+          body: "Welcome ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
+          content-type: text/plain

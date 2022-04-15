@@ -1,0 +1,22 @@
+import 'package:logging/logging.dart';
+import 'package:yaon/yaon.dart' as yaon;
+
+/// Dynamic string parser that can process either YAML or JSON.
+class DynamicStringParser {
+  static final Logger _logger = Logger('DynamicStringParser');
+
+  /// Parses the [data] into a result YAML or JSON result.  If neither
+  /// successfully parses the data, this will return the [data] as it was passed
+  /// in.
+  static dynamic parse(String data) {
+    dynamic result = data;
+
+    try {
+      result = yaon.parse(data);
+    } catch (e, stack) {
+      _logger.info('Unable to parse: [$data]', e, stack);
+    }
+
+    return result;
+  }
+}

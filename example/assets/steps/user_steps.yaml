@@ -1,0 +1,18 @@
+steps:
+  - type: set_variables
+    with:
+      upper_greeting: ${greeting.toUpperCase()}
+      upper_first_name: ${first_name.toUpperCase()}
+      upper_last_name: ${last_name.toUpperCase()}
+  - type: set_variables
+    with:
+      lower_greeting: ${greeting.toLowerCase()}
+      lower_first_name: ${first_name.toLowerCase()}
+      lower_last_name: ${last_name.toLowerCase()}
+  - type: set_response
+    with:
+      content-type: text/plain
+      body: |-
+        ${greeting} ${first_name} ${last_name}
+        ${upper_greeting} ${upper_first_name} ${upper_last_name}
+        ${lower_greeting} ${lower_first_name} ${lower_last_name}

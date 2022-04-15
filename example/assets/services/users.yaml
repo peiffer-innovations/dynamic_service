@@ -1,0 +1,79 @@
+services:
+  - id: user_inline_jane
+    criteria:
+      path: /user/inline/jane
+    steps:
+      - type: set_variables
+        with:
+          greeting: Nice to meet you
+          first_name: Jane
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+
+  - id: user_inline_john
+    criteria:
+      path: /user/inline/john
+    steps:
+      - type: set_variables
+        with:
+          greeting: Bonjour
+          first_name: John
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+
+  - id: user_body_jane
+    criteria:
+      path: /user/jane
+    steps:
+      - type: set_variables
+        with:
+          greeting: Nice to meet you
+          first_name: Jane
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+      - type: set_response
+        with:
+          $ref: assets://body/user.json
+
+  - id: user_inline_john
+    criteria:
+      path: /user/john
+    steps:
+      - type: set_variables
+        with:
+          greeting: Bonjour
+          first_name: John
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+      - type: set_response
+        with:
+          $ref: assets://body/user.json
+
+  - id: write_user
+    criteria:
+      method: PUT
+      path: /user
+      body:
+        - '${json_path(body, "$.name.first").isNotEmpty}'
+        - '${json_path(body, "$.name.last").isNotEmpty}'
+    steps:
+      - type: set_variables
+        with:
+          greeting: "New User:"
+          first_name: ${json_path(body, "$.body.name.first")}
+          last_name: ${json_path(body, "$.body.name.last")}
+      - type: write_file
+        with:
+          path: output/${json_path(body, "$.body.name.first").toLowerCase()}/${json_path(body, "$.body.name.first").toLowerCase()}.json
+          $ref: assets/body/user.json
+
+  - id: get_user
+    criteria:
+      path: /user/:first_name/:last_name
+    steps:
+      - type: set_variables
+        with:
+          $ref: output://${first_name}/${last_name}.json
+      - type: set_response
+        with:
+          $ref: assets://body/user.json

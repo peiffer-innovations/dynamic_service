@@ -1,0 +1,51 @@
+services:
+  - id: hello
+    criteria:
+      method: GET
+      path: /hello
+    steps:
+      - type: set_response
+        with:
+          body: "Hello World!"
+          content-type: text/plain
+
+  - id: goodbye
+    criteria:
+      method: GET
+      path: /goodbye
+    steps:
+      - type: set_response
+        with:
+          body: "Goodbye Cruel World!!!"
+          content-type: text/plain
+
+  - id: get_greeting_regex
+    criteria:
+      method: GET
+      path: /greeting/regex/(?<firstName>[^/]*)/(?<lastName>[^/]*)
+    steps:
+      - type: set_response
+        with:
+          body: "Hi ${path['firstName']} ${path['lastName']}"
+          content-type: text/plain
+
+  - id: get_greeting_simple
+    criteria:
+      method: GET
+      path: /greeting/simple/:firstName/:lastName
+    steps:
+      - type: set_response
+        with:
+          body: "Hello ${path['firstName']} ${path['lastName']}"
+          content-type: text/plain
+
+  - id: timestamp
+    criteria:
+      path: /now
+    steps:
+      - type: set_response
+        with:
+          $ref: assets://body/now.json
+
+  - $ref: assets://services/greetings.yaml
+  - $ref: assets://services/users.yaml

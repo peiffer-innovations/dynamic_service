@@ -1,0 +1,36 @@
+import 'dart:io';
+
+import 'package:dynamic_service/dynamic_service.dart';
+
+class AssetRefLoader extends RefLoader {
+  AssetRefLoader({
+    String? protocol,
+  }) : protocol = protocol ?? 'assets';
+
+  final String protocol;
+
+  @override
+  bool canLoad(String ref) => ref.startsWith('$protocol://');
+
+  @override
+  Future<dynamic> load(
+    String ref, {
+    required DynamicServiceRegistry registry,
+  }) async {
+    if (ref.contains('../') || ref.contains('..\\')) {
+      throw ServiceException(body: 'Invalid ref: [$ref]');
+    }
+
+    var file = File('$protocol/${ref.substring(ref.indexOf('://') + 3)}');
+
+    if (!file.existsSync()) {
+      throw ServiceException(
+        body: '[AssetRefLoader]: error loading asset: [${file.absolute.path}]',
+      );
+    }
+
+    var data = file.readAsStringSync();
+
+    return DynamicStringParser.parse(data);
+  }
+}

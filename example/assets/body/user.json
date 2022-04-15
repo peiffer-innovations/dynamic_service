@@ -1,0 +1,23 @@
+{
+  "standard": {
+    "greeting": "${greeting}",
+    "name": {
+      "first": "${first_name}",
+      "last": "${last_name}"
+    }
+  },
+  "upper": {
+    "greeting": "${upper_greeting}",
+    "name": {
+      "first": "${upper_first_name}",
+      "last": "${upper_last_name}"
+    }
+  },
+  "lower": {
+    "greeting": "${lower_greeting}",
+    "name": {
+      "first": "${lower_first_name}",
+      "last": "${lower_last_name}"
+    }
+  }
+}

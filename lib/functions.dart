@@ -1,0 +1,96 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:dynamic_service/dynamic_service.dart';
+import 'package:functions_framework/functions_framework.dart';
+import 'package:logging/logging.dart';
+import 'package:shelf/shelf.dart';
+
+final _logger = Logger('function');
+
+Middleware? _middleware;
+
+void addMiddleware(Middleware middleware) {
+  if (_middleware == null) {
+    _middleware = middleware;
+  } else {
+    _middleware!.addMiddleware(middleware);
+  }
+}
+
+@CloudFunction()
+Future<Response> function(Request request) async {
+  var middleware = _middleware;
+  var handler = middleware == null ? _process : (await middleware(_process));
+
+  return await handler(request);
+}
+
+FutureOr<Response> _process(Request request) async {
+  Response? response;
+  try {
+    var registry = DynamicServiceRegistry.defaultInstance;
+    var req = await ServiceRequest.fromRequest(request);
+
+    var definition = await registry.serviceDefinitionLoader.load(registry);
+
+    for (var entry in definition.entries) {
+      try {
+        var evaluator = registry.getEvaluator(entry.evaluator);
+
+        var context = await evaluator.evaluate(
+          entry: entry,
+          registry: registry,
+          request: req,
+        );
+
+        if (context != null) {
+          _logger.info(
+              '[functions]: Handler [${entry.id}] for [${request.method.toUpperCase()}] [${request.url.path}].');
+          var steps = await entry.stepLoader.load(registry: registry);
+          for (var step in steps) {
+            await step.execute(context);
+          }
+
+          response = context.response.toResponse();
+          break;
+        }
+      } catch (e, stack) {
+        if (e is ServiceException) {
+          rethrow;
+        }
+
+        throw ServiceException(cause: e, stack: stack);
+      }
+    }
+
+    if (response == null) {
+      _logger.severe(
+        '[functions]: Unable to locate service entry for [${request.method.toUpperCase()}] [${request.url.path}].',
+      );
+      throw ServiceException(body: 'Not Found', code: 404);
+    }
+  } catch (e, stack) {
+    if (e is ServiceException) {
+      _logger.severe(json.encode(e.toJson()), e, e.stack ?? stack);
+      response = Response(
+        e.code,
+        body: e.body ?? '$e\n$stack',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      );
+    } else {
+      _logger.severe('Uncaught error', e, stack);
+      response = Response(
+        500,
+        body: '$e\n$stack',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      );
+    }
+  }
+
+  return response;
+}

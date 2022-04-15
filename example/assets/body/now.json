@@ -1,0 +1,4 @@
+{
+  "local": "${now().toLocal()}",
+  "utc": "${now().toUtc()}"
+}
