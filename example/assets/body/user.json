@@ -7,17 +7,17 @@
     }
   },
   "upper": {
-    "greeting": "${upper_greeting}",
+    "greeting": "${greeting.toUpperCase()}",
     "name": {
-      "first": "${upper_first_name}",
-      "last": "${upper_last_name}"
+      "first": "${first_name.toUpperCase()}",
+      "last": "${last_name.toUpperCase()}"
     }
   },
   "lower": {
-    "greeting": "${lower_greeting}",
+    "greeting": "${greeting.toLowerCase()}",
     "name": {
-      "first": "${lower_first_name}",
-      "last": "${lower_last_name}"
+      "first": "${first_name.toLowerCase()}",
+      "last": "${last_name.toLowerCase()}"
     }
   }
 }
