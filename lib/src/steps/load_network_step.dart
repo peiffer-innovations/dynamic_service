@@ -89,9 +89,12 @@ class LoadNetworkStep extends ServiceStep {
         } finally {
           var endTime = DateTime.now().millisecondsSinceEpoch;
           var duration = (endTime - startTime) / 1000.0;
-          _logger.fine(
-            '[$kType]: loaded url: [${request.url}] in [${duration}s]',
-          );
+          _logger.fine({
+            'message':
+                '[$kType]: loaded url: [${request.url}] in [${duration}s]',
+            'sessionId': context.request.sessionId,
+            'requestId': context.request.requestId,
+          });
         }
       }();
 

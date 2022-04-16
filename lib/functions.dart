@@ -27,6 +27,7 @@ Future<Response> function(Request request) async {
 }
 
 FutureOr<Response> _process(Request request) async {
+  var startTime = DateTime.now().millisecondsSinceEpoch;
   Response? response;
   var req = await ServiceRequest.fromRequest(request);
   try {
@@ -34,6 +35,7 @@ FutureOr<Response> _process(Request request) async {
 
     var definition = await registry.serviceDefinitionLoader.load(registry);
 
+    var evaluatorStartTime = DateTime.now().millisecondsSinceEpoch;
     for (var entry in definition.entries) {
       try {
         var evaluator = registry.getEvaluator(entry.evaluator);
@@ -45,9 +47,15 @@ FutureOr<Response> _process(Request request) async {
         );
 
         if (context != null) {
-          _logger.info(
-            '[functions]: Handler [${entry.id}] for [${request.method.toUpperCase()}] [${request.url.path}].',
-          );
+          var duration =
+              (DateTime.now().millisecondsSinceEpoch - evaluatorStartTime) /
+                  1000.0;
+          _logger.fine({
+            'message':
+                '[functions]: Handler [${entry.id}] for [${request.method.toUpperCase()}] [${request.url.path}] in [${duration}s].',
+            'sessionId': req.sessionId,
+            'requestId': req.requestId,
+          });
           var steps = await entry.stepLoader.load(registry: registry);
           for (var step in steps) {
             var startTime = DateTime.now().millisecondsSinceEpoch;
@@ -116,6 +124,13 @@ FutureOr<Response> _process(Request request) async {
         },
       );
     }
+  } finally {
+    var duration = (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
+    _logger.fine({
+      'message': '[complete]: request completed in [${duration}s]',
+      'sessionId': req.sessionId,
+      'requestId': req.requestId,
+    });
   }
 
   return response;

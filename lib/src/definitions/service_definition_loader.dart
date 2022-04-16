@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:dynamic_service/dynamic_service.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 abstract class ServiceDefinitionLoader {
+  static final Logger _logger = Logger('ServiceDefinitionLoader');
+
   Completer<ServiceDefinition>? _completer;
 
   Future<ServiceDefinition> load(
@@ -15,7 +18,20 @@ abstract class ServiceDefinitionLoader {
       _completer = completer;
 
       try {
-        var result = await loadServiceDefinition(registry);
+        dynamic result;
+
+        var startTime = DateTime.now().millisecondsSinceEpoch;
+        try {
+          result = await loadServiceDefinition(registry);
+        } catch (_) {
+          rethrow;
+        } finally {
+          var duration =
+              (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
+          _logger.fine(
+            '[${runtimeType.toString()}]: loaded service definition in [${duration}s]',
+          );
+        }
         completer.complete(result);
       } catch (e, stack) {
         completer.completeError(e, stack);

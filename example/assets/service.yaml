@@ -47,32 +47,23 @@ services:
         with:
           $ref: assets://body/now.json
 
-  - id: name_generator
+  - id: name_generator_network
     criteria:
-      path: /generate-name
+      path: /generate-name/network
     steps:
-      - type: load_network
-        with:
-          requests:
-            - id: firstName
-              url: https://peiffer-innovations.github.io/dynamic_service/pages/first_names.json
-            - id: lastName
-              url: https://peiffer-innovations.github.io/dynamic_service/pages/last_names.json
-      - type: shuffle_list
-        with:
-          list: ${json_path(load_network, '$.first.body.names')}
-          variable: first
-      - type: shuffle_list
-        with:
-          list: ${json_path(load_network, '$.last.body.names')}
-          variable: last
-      - type: set_variables
-        with:
-          first: ${json_path(load_network, '$.last.body.names').first}
-          last: ${json_path(load_network, '$.last.body.names').first}
+      - $ref: assets://steps/random_names.yaml
       - type: set_response
         with:
-          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/response.json
+          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/
+
+  - id: name_generator_local
+    criteria:
+      path: /generate-name/local
+    steps:
+      - $ref: assets://steps/random_names.yaml
+      - type: set_response
+        with:
+          $ref: assets://body/response.json
 
   - $ref: assets://services/greetings.yaml
   - $ref: assets://services/users.yaml

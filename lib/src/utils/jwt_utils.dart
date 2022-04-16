@@ -101,7 +101,7 @@ class JwtUtils {
         milliseconds:
             DateTime.now().millisecondsSinceEpoch + expires.inMilliseconds,
       ).inSeconds,
-      'iat': DateTime.now().microsecondsSinceEpoch ~/ 1000,
+      'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
     };
 
     for (var entry in claims.entries) {

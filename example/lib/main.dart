@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dynamic_service/dynamic_service.dart';
@@ -9,16 +10,27 @@ import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 Future<void> main(List<String> args) async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    // ignore: avoid_print
-    print('${record.level.name}: ${record.time}: ${record.message}');
+    var body = record.object ?? record.message;
+
+    var output = {'level': record.level.name, 'time': record.time.toString()};
+
+    if (body is Map) {
+      for (var entry in body.entries) {
+        output[entry.key] = entry.value.toString();
+      }
+    } else {
+      output['message'] = body.toString();
+    }
+
     if (record.error != null) {
-      // ignore: avoid_print
-      print('${record.error}');
+      output['error'] = '${record.error}';
     }
     if (record.stackTrace != null) {
-      // ignore: avoid_print
-      print('${record.stackTrace}');
+      output['stack'] = '${record.stackTrace}';
     }
+
+    // ignore: avoid_print
+    print(json.encode(output));
   });
 
   var output = Directory('output');

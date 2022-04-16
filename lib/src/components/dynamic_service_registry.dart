@@ -105,7 +105,17 @@ class DynamicServiceRegistry {
         (loader) => loader.canLoad(ref),
       );
 
-      return await refLoader.load(ref, registry: this);
+      var startTime = DateTime.now().millisecondsSinceEpoch;
+      var result = await refLoader.load(ref, registry: this);
+      var duration =
+          (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
+      _logger.fine({
+        'message': '[loadRef]: loaded ref: [$ref] in [${duration}s]',
+        'sessionId': context?.request.sessionId ?? '<internal>',
+        'requestId': context?.request.requestId ?? '<internal>',
+      });
+
+      return result;
     } catch (e, stack) {
       throw ServiceException(
         body: 'Unable to load \$ref: [$ref]',

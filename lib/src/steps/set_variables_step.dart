@@ -24,7 +24,7 @@ class SetVariablesStep extends ServiceStep {
     if (ref == null) {
       context.variables.addAll(args);
     } else {
-      var variable = args[StandardVariableNames.kNameVariable];
+      var variable = args[StandardVariableNames.kNameVariable] ?? kType;
       var data = await context.registry.loadRef(ref, context: context);
       try {
         if (data is Map || data is Iterable) {
@@ -69,8 +69,7 @@ class SetVariablesStep extends ServiceStep {
           context.variables[variable] = variables;
         }
       } else {
-        context.variables[variable ?? StandardVariableNames.kNameVariable] =
-            data;
+        context.variables[variable] = data;
       }
     }
   }

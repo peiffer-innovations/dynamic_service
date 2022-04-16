@@ -20,12 +20,7 @@ class ShuffleListStep extends ServiceStep {
     Map<String, dynamic> args,
   ) async {
     var random = Random.secure();
-    var list = yaon.parse(
-      Template(
-        syntax: context.registry.templateSyntax,
-        value: args['list'],
-      ).process(context: context.variables),
-    );
+    var list = yaon.parse(args['list']);
     var passes = JsonClass.parseInt(
           Template(
             syntax: context.registry.templateSyntax,
@@ -40,13 +35,12 @@ class ShuffleListStep extends ServiceStep {
 
       for (var i = 0; i < passes; i++) {
         for (var j = 0; j < result.length; j++) {
-          var input = random.nextInt(result.length);
-          var output = random.nextInt(result.length);
+          var target = random.nextInt(result.length);
 
-          if (input != output) {
-            var temp = result[input];
-            result[input] = result[output];
-            result[output] = temp;
+          if (target != j) {
+            var temp = result[j];
+            result[j] = result[target];
+            result[target] = temp;
           }
         }
       }

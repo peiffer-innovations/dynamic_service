@@ -67,9 +67,12 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
 
         variables['path'] = pathVars;
       } else {
-        _logger.finest(
-          '[id: ${entry.id}]: path does not match -- [${request.path}] != [${criteria.path}]',
-        );
+        _logger.finest({
+          'message':
+              '[id: ${entry.id}]: path does not match -- [${request.path}] != [${criteria.path}]',
+          'sessionId': request.sessionId,
+          'requestId': request.requestId,
+        });
         isMatch = false;
       }
 
@@ -80,9 +83,12 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
         if (matches) {
           variables['method'] = request.method;
         } else {
-          _logger.finest(
-            '[id: ${entry.id}]: method does not match -- [${request.method}] != [${criteria.method}]',
-          );
+          _logger.finest({
+            'message':
+                '[id: ${entry.id}]: method does not match -- [${request.method}] != [${criteria.method}]',
+            'sessionId': request.sessionId,
+            'requestId': request.requestId,
+          });
           isMatch = false;
         }
       }
@@ -100,9 +106,12 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
               var result = JsonClass.parseBool(input);
 
               if (!result) {
-                _logger.finest(
-                  '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
-                );
+                _logger.finest({
+                  'message':
+                      '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
+                  'sessionId': request.sessionId,
+                  'requestId': request.requestId,
+                });
                 conditionMatch = false;
                 break;
               }
@@ -119,9 +128,12 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
               var result = RegExp(e.value).hasMatch(input);
 
               if (!result) {
-                _logger.finest(
-                  '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
-                );
+                _logger.finest({
+                  'message':
+                      '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
+                  'sessionId': request.sessionId,
+                  'requestId': request.requestId,
+                });
                 conditionMatch = false;
                 break;
               }
@@ -135,9 +147,12 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
 
             conditionMatch = result;
             if (!conditionMatch) {
-              _logger.finest(
-                '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
-              );
+              _logger.finest({
+                'message':
+                    '[id: ${entry.id}]: condition does not match -- [${input}] != [${result}]',
+                'sessionId': request.sessionId,
+                'requestId': request.requestId,
+              });
             }
           }
         }
@@ -157,12 +172,19 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
           variables: variables,
         );
       }
-      _logger.fine(
-        '[id: ${entry.id}] -- [${request.method}: ${request.path}]: matches: [$isMatch] -- criteria: $criteria',
-      );
+      _logger.fine({
+        'message':
+            '[id: ${entry.id}] -- [${request.method}: ${request.path}]: matches: [$isMatch] -- criteria: $criteria',
+        'sessionId': request.sessionId,
+        'requestId': request.requestId,
+      });
     } catch (e, stack) {
       _logger.severe(
-        'Exception in evaluation of: ${criteria.toString()}',
+        {
+          'message': 'Exception in evaluation of: ${criteria.toString()}',
+          'sessionId': request.sessionId,
+          'requestId': request.requestId,
+        },
         e,
         stack,
       );
