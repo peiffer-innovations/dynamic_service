@@ -1,4 +1,4 @@
 {
-  "firstName": "${first.name}",
-  "lasttName": "${last.name}"
+  "firstName": "${first}",
+  "lasttName": "${last}"
 }
