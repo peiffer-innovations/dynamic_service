@@ -54,7 +54,16 @@ services:
       - $ref: assets://steps/random_names.yaml
       - type: set_response
         with:
-          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/
+          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/response.json
+
+  - id: name_generator_network_yaml
+    criteria:
+      path: /generate-name/network/yaml
+    steps:
+      - $ref: assets://steps/random_names.yaml
+      - type: set_response
+        with:
+          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/response.yaml
 
   - id: name_generator_local
     criteria:
