@@ -35,7 +35,7 @@ class SetResponseStep extends ServiceStep {
     } else {
       var data = await context.registry.loadRef(ref, context: context);
 
-      if (data is Map || data is Iterable) {
+      if (data is! List<int> && (data is Map || data is Iterable)) {
         try {
           data = json.encode(data);
         } catch (e, stack) {

@@ -74,5 +74,32 @@ services:
         with:
           $ref: assets://body/response.json
 
+  - id: weather
+    criteria:
+      path: /weather
+    steps:
+      - type: set_response
+        with:
+          content-type: image/svg+xml
+          $ref: assets://images/weatherchart.svg
+
+  - id: mountain
+    criteria:
+      path: /mountain
+    steps:
+      - type: set_response
+        with:
+          content-type: image/jpeg
+          $ref: assets://images/mountain.jpg
+
+  - id: mountain_network
+    criteria:
+      path: /mountain/network
+    steps:
+      - type: set_response
+        with:
+          content-type: image/jpeg
+          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/mountain.jpg
+
   - $ref: assets://services/greetings.yaml
   - $ref: assets://services/users.yaml

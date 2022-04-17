@@ -32,7 +32,15 @@ class NetworkRefLoader extends RefLoader {
         jsonResponse: false,
         request: request,
       );
-      return DynamicStringParser.parse(utf8.decode(response.body));
+
+      dynamic body = response.body;
+      try {
+        body = utf8.decode(body);
+      } catch (_) {
+        // no-op
+      }
+
+      return body is String ? DynamicStringParser.parse(body) : body;
     } catch (e) {
       throw ServiceException(
         body: '[NetworkRefLoader]: error loading url: [$ref]',

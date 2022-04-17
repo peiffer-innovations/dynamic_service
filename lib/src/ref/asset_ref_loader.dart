@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dynamic_service/dynamic_service.dart';
@@ -29,8 +30,14 @@ class AssetRefLoader extends RefLoader {
       );
     }
 
-    var data = file.readAsStringSync();
+    dynamic data = file.readAsBytesSync();
 
-    return DynamicStringParser.parse(data);
+    try {
+      data = utf8.decode(data);
+    } catch (e) {
+      // no-op
+    }
+
+    return data is String ? DynamicStringParser.parse(data) : data;
   }
 }
