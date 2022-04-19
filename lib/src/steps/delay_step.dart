@@ -19,8 +19,8 @@ class DelayStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var max = JsonClass.parseInt(args['max']) ?? 5000;
-    var min = JsonClass.parseInt(args['min']) ?? 1000;
+    var max = JsonClass.parseInt(process(context, args['max'])) ?? 5000;
+    var min = JsonClass.parseInt(process(context, args['min'])) ?? 1000;
 
     assert(min <= max);
     assert(min >= 0);

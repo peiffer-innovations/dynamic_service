@@ -50,11 +50,11 @@ Future<void> main(List<String> args) async {
     ),
   );
 
+  function_library.addMiddleware(corsHeaders());
+
   await serve(
     args,
     _nameToFunctionTarget,
-    autoCompress: true,
-    customMiddleware: corsHeaders(),
   );
 }
 

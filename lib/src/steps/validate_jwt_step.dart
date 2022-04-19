@@ -14,19 +14,27 @@ class ValidateJwtStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var token = args[StandardVariableNames.kNameToken];
-    var key = args['key']?.toString();
-
+    var key = process(context, args['key']);
     if (key == null) {
       throw ServiceException(
-        code: 401,
+        code: 403,
         body: 'Missing JWT key',
+      );
+    }
+
+    var token = process(context, args[StandardVariableNames.kNameToken]);
+
+    if (token == null) {
+      throw ServiceException(
+        code: 403,
+        body: 'Missing authorization token',
       );
     }
 
     var jwt = await JwtUtils.validate(token, key: key);
 
-    context.variables[args[StandardVariableNames.kNameVariable] ??
-        StandardVariableNames.kNameToken] = jwt.claims.toJson();
+    context.variables[
+        process(context, args[StandardVariableNames.kNameVariable]) ??
+            kType] = jwt.claims.toJson();
   }
 }

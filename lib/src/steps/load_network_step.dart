@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
 import 'package:logging/logging.dart';
@@ -31,9 +33,17 @@ class LoadNetworkStep extends ServiceStep {
         throw ServiceException(body: '[$kType]: no request or requests set');
       }
 
+      var processed = process(context, arg);
+
+      if (processed == null || processed.isEmpty) {
+        throw ServiceException(
+          body: '[$kType]: no request template is null or empty',
+        );
+      }
+
       requests.add(
         NetworkRequest.fromDynamic(
-          arg,
+          json.decode(processed),
           defaultId: (++index).toString(),
         ),
       );

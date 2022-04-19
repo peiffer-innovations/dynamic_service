@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dynamic_service/dynamic_service.dart';
+import 'package:json_class/json_class.dart';
 import 'package:logging/logging.dart';
 import 'package:template_expressions/template_expressions.dart';
 
@@ -20,7 +21,7 @@ class WriteFileStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var contents = context.variables['contents'];
+    var contents = args['contents'];
     var path = Template(
       syntax: context.registry.templateSyntax,
       value: args['path'],
@@ -30,31 +31,29 @@ class WriteFileStep extends ServiceStep {
       throw ServiceException(body: 'Invalid path: [$path]');
     }
 
+    var format = JsonClass.parseBool(args['format']);
     var ref = args['\$ref'];
 
     if (ref != null) {
-      var data = await context.registry.loadRef(ref, context: context);
+      contents = await context.registry.loadRef(ref, context: context);
+    }
 
-      if (data is Map || data is Iterable) {
-        try {
-          data = json.encode(data);
-        } catch (e, stack) {
-          _logger.fine({
-            'message': 'Error attempting to JSON encode data',
-            'sessionId': context.request.sessionId,
-            'requestId': context.request.requestId,
-          }, e, stack);
-        }
+    if (contents is Map || contents is List) {
+      try {
+        contents = format == true
+            ? JsonEncoder.withIndent('  ').convert(contents)
+            : json.encode(contents);
+      } catch (e, stack) {
+        _logger.fine({
+          'message': 'Error attempting to JSON encode data',
+          'sessionId': context.request.sessionId,
+          'requestId': context.request.requestId,
+        }, e, stack);
       }
-
-      contents = data;
     }
 
     if (contents is String) {
-      contents = Template(
-        syntax: context.registry.templateSyntax,
-        value: contents,
-      ).process(context: context.variables);
+      contents = process(context, contents);
     }
 
     var file = File(path);

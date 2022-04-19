@@ -62,6 +62,7 @@ class DynamicServiceRegistry {
     SetVariablesStep.kType: (args) => SetVariablesStep(args: args),
     ShuffleListStep.kType: (args) => ShuffleListStep(args: args),
     ValidateJwtStep.kType: (args) => ValidateJwtStep(args: args),
+    ValidateSchemaStep.kType: (args) => ValidateSchemaStep(args: args),
     WriteFileStep.kType: (args) => WriteFileStep(args: args),
   };
 
@@ -86,9 +87,14 @@ class DynamicServiceRegistry {
       throw Exception('[DynamicServiceRegistry]: unknown step type: [$type]');
     }
 
-    result = builder(args);
+    try {
+      result = builder(args);
 
-    return result;
+      return result;
+    } catch (e) {
+      _logger.severe('[getStep]: error building step: [$type]');
+      rethrow;
+    }
   }
 
   Future<dynamic> loadRef(
@@ -96,6 +102,10 @@ class DynamicServiceRegistry {
     ServiceContext? context,
   }) async {
     try {
+      ref = Template(syntax: templateSyntax, value: ref).process(
+        context: context?.variables ?? const <String, dynamic>{},
+      );
+
       _logger.info({
         'message': '[loadRef]: attempting to load ref: [$ref]',
         'sessionId': context?.request.sessionId ?? '<internal>',

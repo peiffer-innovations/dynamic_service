@@ -31,6 +31,7 @@ export 'src/steps/set_response_step.dart';
 export 'src/steps/set_variables_step.dart';
 export 'src/steps/shuffle_list_step.dart';
 export 'src/steps/validate_jwt_step.dart';
+export 'src/steps/validate_schema_step.dart';
 export 'src/steps/write_file_step.dart';
 
 export 'src/utils/dynamic_string_parser.dart';

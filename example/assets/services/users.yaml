@@ -57,15 +57,29 @@ services:
         - '${json_path(body, "$.name.first").isNotEmpty}'
         - '${json_path(body, "$.name.last").isNotEmpty}'
     steps:
+      - type: validate_schema
+        with:
+          content: ${body}
+          schema:
+            $ref: assets://schemas/name_schema.yaml
       - type: set_variables
         with:
           greeting: "New User:"
           first_name: "${json_path(body, '$.name.first')}"
           last_name: "${json_path(body, '$.name.last')}"
+      - type: set_variables
+        with:
+          $ref: assets://body/user.json
+          variable: response_body
       - type: write_file
         with:
           path: "output/${json_path(body, '$.name.first').toLowerCase()}_${json_path(body, '$.name.last').toLowerCase()}.json"
-          $ref: assets://body/user.json
+          # $ref: assets://body/user.json
+          contents: ${response_body.toJson(2)}
+      - type: set_response
+        with:
+          body: ${response_body.toJson()}
+          code: 201
 
   - id: get_user
     criteria:
@@ -73,7 +87,9 @@ services:
     steps:
       - type: set_variables
         with:
-          $ref: output://${first_name}/${last_name}.json
+          $ref: output://${path["first_name"]}_${path["last_name"]}.json
+          variable: response_body
       - type: set_response
         with:
-          $ref: assets://body/user.json
+          body: ${response_body.toJson()}
+      - type: etag

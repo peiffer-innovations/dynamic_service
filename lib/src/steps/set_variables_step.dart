@@ -22,13 +22,22 @@ class SetVariablesStep extends ServiceStep {
     var ref = args[r'$ref'];
 
     if (ref == null) {
-      context.variables.addAll(args);
+      context.variables.addAll(
+        args.map(
+          (key, value) => MapEntry<String, dynamic>(
+            key,
+            process(context, value),
+          ),
+        ),
+      );
     } else {
       var variable = args[StandardVariableNames.kNameVariable] ?? kType;
       var data = await context.registry.loadRef(ref, context: context);
+      var jsonEncoded = false;
       try {
         if (data is Map || data is Iterable) {
           data = json.encode(data);
+          jsonEncoded = true;
         }
       } catch (e, stack) {
         _logger.fine({
@@ -42,35 +51,22 @@ class SetVariablesStep extends ServiceStep {
         data = Template(
           syntax: context.registry.templateSyntax,
           value: data,
-        );
+        ).process(context: context.variables);
       }
 
-      try {
-        data = json.decode(data);
-      } catch (e, stack) {
-        _logger.fine({
-          'message': 'Error attempting to JSON decode data',
-          'sessionId': context.request.sessionId,
-          'requestId': context.request.requestId,
-        }, e, stack);
-      }
-
-      var variables = <String, dynamic>{};
-      if (data is Map) {
-        variables.addAll(
-          data.map(
-            (key, value) => MapEntry<String, dynamic>(key.toString(), value),
-          ),
-        );
-
-        if (variable == null) {
-          context.variables.addAll(variables);
-        } else {
-          context.variables[variable] = variables;
+      if (jsonEncoded) {
+        try {
+          data = json.decode(data);
+        } catch (e, stack) {
+          _logger.fine({
+            'message': 'Error attempting to JSON decode data',
+            'sessionId': context.request.sessionId,
+            'requestId': context.request.requestId,
+          }, e, stack);
         }
-      } else {
-        context.variables[variable] = data;
       }
+
+      context.variables[variable] = data;
     }
   }
 }
