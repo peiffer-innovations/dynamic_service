@@ -1,5 +1,4 @@
 import 'package:dynamic_service/dynamic_service.dart';
-import 'package:dynamic_service/src/definitions/memory_service_definition_loader.dart';
 import 'package:dynamic_service/src/steps/load_network_step.dart';
 import 'package:logging/logging.dart';
 import 'package:template_expressions/template_expressions.dart';
@@ -13,34 +12,17 @@ class DynamicServiceRegistry {
     Map<String, StepBuilder>? steps,
     required this.serviceDefinitionLoader,
     List<ExpressionSyntax>? templateSyntax,
+    List<Writer>? writers,
   })  : templateSyntax =
             List.unmodifiable(templateSyntax ?? [StandardExpressionSyntax()]),
-        _refLoaders = refLoaders ?? [AssetRefLoader()] {
+        _refLoaders = refLoaders ?? [FileRefLoader()],
+        _writers = writers ?? const [] {
     evaluators?.forEach((key, value) => _evaluators[key] = value);
     steps?.forEach((key, value) => _steps[key] = value);
   }
 
   static DynamicServiceRegistry defaultInstance = DynamicServiceRegistry(
-    serviceDefinitionLoader: MemoryServiceDefinitionLoader(
-      definition: ServiceDefinition(entries: [
-        ServiceEntry(
-          evaluator: 'always',
-          id: 'hello',
-          steps: [
-            {
-              'type': 'apply_response',
-              'args': {
-                'body': 'Hello World!',
-                'code': 200,
-                'headers': {
-                  'content-type': 'text/plain',
-                },
-              },
-            },
-          ],
-        )
-      ], id: 'hello'),
-    ),
+    serviceDefinitionLoader: MemoryServiceDefinitionLoader.defaultInstance,
   );
 
   static final Logger _logger = Logger('DynamicServiceRegistry');
@@ -57,14 +39,41 @@ class DynamicServiceRegistry {
     CreateJwtStep.kType: (args) => CreateJwtStep(args: args),
     DelayStep.kType: (args) => DelayStep(args: args),
     ETagStep.kType: (args) => ETagStep(args: args),
+    ForEachStep.kType: (args) => ForEachStep(args: args),
     LoadNetworkStep.kType: (args) => LoadNetworkStep(args: args),
+    ParallelStep.kType: (args) => ParallelStep(args: args),
     SetResponseStep.kType: (args) => SetResponseStep(args: args),
     SetVariablesStep.kType: (args) => SetVariablesStep(args: args),
     ShuffleListStep.kType: (args) => ShuffleListStep(args: args),
     ValidateJwtStep.kType: (args) => ValidateJwtStep(args: args),
     ValidateSchemaStep.kType: (args) => ValidateSchemaStep(args: args),
-    WriteFileStep.kType: (args) => WriteFileStep(args: args),
+    WriteStep.kType: (args) => WriteStep(args: args),
   };
+  final List<Writer> _writers;
+
+  Future<void> executeDynamicSteps(
+    dynamic steps, {
+    required ServiceContext context,
+    bool parallel = false,
+  }) async {
+    var loader = StepLoader(steps);
+    var loaded = await loader.load(registry: context.registry);
+
+    var futures = <Future>[];
+    for (var s in loaded) {
+      var future = s.execute(context);
+
+      if (parallel) {
+        futures.add(future);
+      } else {
+        await future;
+      }
+    }
+
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
+    }
+  }
 
   CriteriaEvaluator getEvaluator(String? type) {
     var result = _evaluators[type];
@@ -151,4 +160,47 @@ class DynamicServiceRegistry {
       _steps[type] = builder;
 
   void registerSteps(Map<String, StepBuilder> steps) => _steps.addAll(steps);
+
+  Future<void> write(
+    String target,
+    dynamic contents, {
+    required ServiceContext context,
+    Map<String, dynamic>? properties,
+  }) async {
+    try {
+      target = Template(syntax: templateSyntax, value: target).process(
+        context: context.variables,
+      );
+
+      _logger.info({
+        'message': '[write]: attempting to write: [$target]',
+        'sessionId': context.request.sessionId,
+        'requestId': context.request.requestId,
+      });
+      Writer? writer = _writers.firstWhere(
+        (loader) => loader.canWrite(target),
+      );
+
+      var startTime = DateTime.now().millisecondsSinceEpoch;
+      await writer.write(
+        target,
+        contents,
+        context: context,
+        properties: properties,
+      );
+      var duration =
+          (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
+      _logger.fine({
+        'message': '[write]: wrote: [$target] in [${duration}s]',
+        'sessionId': context.request.sessionId,
+        'requestId': context.request.requestId,
+      });
+    } catch (e, stack) {
+      throw ServiceException(
+        body: 'Unable to write: [$target]',
+        cause: e,
+        stack: stack,
+      );
+    }
+  }
 }

@@ -3,21 +3,17 @@ import 'dart:convert';
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:rest_client/rest_client.dart';
 
-class NetworkRefLoader extends RefLoader {
+class NetworkRefLoader extends RegExpRefLoader {
   NetworkRefLoader({
     Authorizer? authorizer,
     Client? client,
-    String? urls,
+    RegExp? regExp,
   })  : _authorizer = authorizer,
         _client = client ?? Client(),
-        _urls = RegExp(urls ?? r'^(http|https)://.*');
+        super(regExp: regExp ?? RegExp(r'^(http|https)://.*'));
 
   final Authorizer? _authorizer;
   final Client _client;
-  final RegExp _urls;
-
-  @override
-  bool canLoad(String ref) => _urls.hasMatch(ref);
 
   @override
   Future<dynamic> load(

@@ -57,7 +57,11 @@ class SetResponseStep extends ServiceStep {
       ).process(context: context.variables);
     }
 
-    context.response.body = body is String ? utf8.encode(body) : body;
+    context.response.body = body == null
+        ? const <int>[]
+        : body is String
+            ? utf8.encode(body)
+            : body;
     context.response.contentType =
         args['content-type'] ?? args['contentType'] ?? contentType;
     context.response.headers.addAll(

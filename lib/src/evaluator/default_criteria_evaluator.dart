@@ -30,7 +30,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
         // no-op
       }
 
-      var path = criteria.path;
+      var path = '^${criteria.path}\$';
       if (path.contains('/:')) {
         path = path.split('/').map((e) {
           var result = e;
@@ -77,7 +77,10 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
       }
 
       if (isMatch) {
-        regex = RegExp(criteria.method);
+        regex = RegExp(
+          criteria.method,
+          caseSensitive: false,
+        );
         var matches = regex.hasMatch(request.method);
 
         if (matches) {
@@ -166,6 +169,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
       if (isMatch) {
         variables['request'] = req;
         result = ServiceContext(
+          entry: entry,
           registry: registry,
           request: request,
           response: ServiceResponse(),

@@ -5,6 +5,27 @@ class MemoryServiceDefinitionLoader extends ServiceDefinitionLoader {
     required this.definition,
   });
 
+  static final defaultInstance = MemoryServiceDefinitionLoader(
+    definition: ServiceDefinition(entries: [
+      ServiceEntry(
+        evaluator: 'always',
+        id: 'hello',
+        steps: [
+          {
+            'type': 'apply_response',
+            'args': {
+              'body': 'Hello World!',
+              'code': 200,
+              'headers': {
+                'content-type': 'text/plain',
+              },
+            },
+          },
+        ],
+      )
+    ], id: 'hello'),
+  );
+
   final ServiceDefinition definition;
 
   @override

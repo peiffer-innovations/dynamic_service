@@ -10,6 +10,7 @@ class AlwaysCriteriaEvaluator extends CriteriaEvaluator {
     required ServiceRequest request,
   }) async =>
       ServiceContext(
+        entry: entry,
         registry: registry,
         request: request,
         response: ServiceResponse(),

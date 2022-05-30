@@ -49,7 +49,7 @@ class NetworkServiceDefinitionLoader extends ServiceDefinitionLoader {
         );
 
         if (response.statusCode == 200) {
-          _etag = response.headers?['etag'];
+          _etag = response.headers['etag'];
           var body = DynamicStringParser.parse(utf8.decode(response.body));
           definition = await ServiceDefinition.fromDynamic(
             body,

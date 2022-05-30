@@ -1,0 +1,80 @@
+services:
+  - id: jwt_hmac_create
+    criteria:
+      method: post
+      path: /jwt/hmac/create
+    steps:
+      - set_variables:
+        with:
+          $ref: assets://keys/hmac.txt
+          variable: key
+
+      - type: create_jwt
+        with:
+          accessToken:
+            expires: ${minutes(15).inSeconds}
+            key: ${key}
+            key-type: HS256
+            claims:
+              username: ${request.body[]}
+          refreshToken:
+            expires: ${days(14).inSeconds}
+            key: ${key}
+            key-type: HS256
+            claims:
+              refresh: true
+              username: ${request.body[]}
+
+  - id: jwt_hmac_refresh
+    criteria:
+      method: get
+      path: /jwt/hmac/verify
+    steps:
+      - set_variables:
+        with:
+          $ref: assets://keys/hmac.txt
+          variable: key
+
+      - type: validate_jwt
+        with:
+          accessToken:
+            key: ${key}
+            token: ${headers['x-authorization']}
+            variable: claims
+
+      - type: conditional
+        with:
+          condition: ${claims['refresh']?.toString() == 'true'}
+          false:
+            steps:
+              - type: set_response
+                with:
+                  content-type: text/plain
+                  body: Not a valid refresh token
+          true:
+            steps:
+              - type: set_response
+                with:
+                  content-type: text/plain
+                  body: Valid refresh token
+
+  - id: jwt_hmac_validate
+    criteria:
+      method: post
+      path: /jwt/hmac/validate
+    steps:
+      - set_variables:
+        with:
+          $ref: assets://keys/hmac.txt
+          variable: key
+
+      - type: validate_jwt
+        with:
+          key: ${key}
+          token: ${headers['x-authorization']}
+          variable: claims
+
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: Hello, ${claims['username']}

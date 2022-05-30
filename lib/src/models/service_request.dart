@@ -46,6 +46,8 @@ class ServiceRequest extends JsonClass {
   final String requestId;
   final String sessionId;
 
+  Map<String, dynamic>? _json;
+
   static Future<ServiceRequest> fromRequest(Request request) async =>
       ServiceRequest(
         body: await request.read().fold(
@@ -72,48 +74,54 @@ class ServiceRequest extends JsonClass {
 
   @override
   Map<String, dynamic> toJson({
-    int maxBodySize = 0,
+    int maxBodySize = -1,
     Iterable<String> sensitiveHeaders = const {
       'authorization',
       'x-authorization',
     },
   }) {
-    assert(maxBodySize >= -1);
-    var headers = Map<String, String>.from(this.headers);
+    var result = _json;
 
-    for (var h in sensitiveHeaders) {
-      headers[h] = '***';
-    }
+    if (result == null) {
+      assert(maxBodySize >= -1);
+      var headers = Map<String, String>.from(this.headers);
 
-    var result = <String, dynamic>{
-      'headers': headers,
-      'method': method,
-      'path': path,
-      'query': query,
-      'requestId': requestId,
-      'sessionId': sessionId,
-    };
+      for (var h in sensitiveHeaders) {
+        headers[h] = '***';
+      }
 
-    if (maxBodySize != 0) {
-      var body = '';
+      result = <String, dynamic>{
+        'headers': headers,
+        'method': method,
+        'path': path,
+        'query': query,
+        'requestId': requestId,
+        'sessionId': sessionId,
+      };
 
-      if (body.isNotEmpty) {
-        var bodyStr = bodyAsString;
-        if (bodyStr.isNotEmpty) {
-          body = bodyStr;
-          try {
-            var bodyJson = json.decode(bodyStr);
-            body = bodyJson;
-          } catch (e) {
-            // no-op
+      if (maxBodySize != 0) {
+        var body = '';
+
+        if (this.body.isNotEmpty) {
+          var bodyStr = bodyAsString;
+          if (bodyStr.isNotEmpty) {
+            body = bodyStr;
+            try {
+              var bodyJson = json.decode(bodyStr);
+              body = bodyJson;
+            } catch (e) {
+              // no-op
+            }
           }
         }
+        if (maxBodySize != kUnlimitedBodySize && maxBodySize < body.length) {
+          body = '${body.substring(0, maxBodySize)}...';
+        }
+        result['body'] = body;
       }
-      if (maxBodySize != kUnlimitedBodySize && maxBodySize < body.length) {
-        body = '${body.substring(0, maxBodySize)}...';
-      }
+
+      _json = result;
     }
-    result['body'] = body;
 
     return result;
   }

@@ -4,7 +4,6 @@ import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
 import 'package:meta/meta.dart';
 import 'package:template_expressions/template_expressions.dart';
-import 'package:yaon/yaon.dart' as yaon;
 
 abstract class ServiceStep extends JsonClass {
   ServiceStep({
@@ -57,13 +56,15 @@ abstract class ServiceStep extends JsonClass {
         } catch (e) {
           // no-op
         }
+      } else {
+        data = value.toString();
       }
     }
 
-    if (data != null) {
+    if (data != null && data.isNotEmpty) {
       data = Template(
         syntax: context.registry.templateSyntax,
-        value: data,
+        value: data.toString(),
       ).process(context: context.variables);
     }
 

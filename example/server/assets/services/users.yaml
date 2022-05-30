@@ -1,0 +1,100 @@
+services:
+  - id: user_inline_jane
+    criteria:
+      path: /user/inline/jane
+    steps:
+      - type: set_variables
+        with:
+          greeting: Nice to meet you
+          first_name: Jane
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+
+  - id: user_inline_john
+    criteria:
+      path: /user/inline/john
+    steps:
+      - type: set_variables
+        with:
+          greeting: Bonjour
+          first_name: John
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+
+  - id: user_body_jane
+    criteria:
+      path: /user/jane
+    steps:
+      - type: set_variables
+        with:
+          greeting: Nice to meet you
+          first_name: Jane
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+      - type: set_response
+        with:
+          $ref: assets://body/user.json
+
+  - id: user_body_john
+    criteria:
+      path: /user/john
+    steps:
+      - type: set_variables
+        with:
+          greeting: Bonjour
+          first_name: John
+          last_name: Smith
+      - $ref: assets://steps/user_steps.yaml
+      - type: set_response
+        with:
+          $ref: assets://body/user.json
+
+  - id: write_user
+    criteria:
+      method: PUT
+      path: /user
+      body:
+        - '${json_path(body, "$.name.first").isNotEmpty}'
+        - '${json_path(body, "$.name.last").isNotEmpty}'
+    steps:
+      - type: validate_schema
+        with:
+          content: ${body}
+          schema:
+            $ref: assets://schemas/name_schema.yaml
+      - type: set_variables
+        with:
+          greeting: "New User:"
+          first_name: "${json_path(body, '$.name.first')}"
+          last_name: "${json_path(body, '$.name.last')}"
+      - type: set_variables
+        with:
+          $ref: assets://body/user.json
+          variable: response_body
+      - type: write_file
+        with:
+          path: "output/${json_path(body, '$.name.first').toLowerCase()}_${json_path(body, '$.name.last').toLowerCase()}.json"
+          # $ref: assets://body/user.json
+          contents: ${response_body.toJson(2)}
+      - type: set_response
+        with:
+          body: ${response_body.toJson()}
+          code: 201
+
+  - id: get_user
+    criteria:
+      path: /user/:first_name/:last_name
+    onError:
+      body: 'Unable to locate user: ${path["first_name"]} ${path["last_name"]}'
+      code: 404
+      content-type: text/plain
+
+    steps:
+      - type: set_variables
+        with:
+          $ref: output://${path["first_name"].toLowerCase()}_${path["last_name"].toLowerCase()}.json
+          variable: response_body
+      - type: set_response
+        with:
+          body: ${response_body.toJson()}
+      - type: etag

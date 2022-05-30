@@ -14,6 +14,21 @@ class ServiceResponse extends JsonClass {
   String contentType = 'application/json';
   int status = 200;
 
+  static ServiceResponse? fromDynamic(dynamic map) {
+    ServiceResponse? result;
+
+    if (map != null) {
+      result = ServiceResponse();
+      result._headers.addAll(map['headers'] ?? {});
+      result.body = utf8.encode(map['body'] ?? '');
+      result.contentType =
+          map['contentType'] ?? map['content-type'] ?? 'application/json';
+      result.status = JsonClass.parseInt(map['status'] ?? map['code']) ?? 200;
+    }
+
+    return result;
+  }
+
   Map<String, String> get headers {
     _headers['content-type'] = contentType;
     return _headers;

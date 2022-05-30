@@ -8,6 +8,7 @@ class ServiceEntry {
     ServiceCriteria? criteria,
     String? evaluator,
     required this.id,
+    this.onError,
     ServiceResponse? response,
     StepLoader? stepLoader,
     dynamic steps,
@@ -21,6 +22,7 @@ class ServiceEntry {
   final ServiceCriteria criteria;
   final String evaluator;
   final String id;
+  final ServiceResponse? onError;
   final ServiceResponse response;
   final StepLoader stepLoader;
 
@@ -38,6 +40,7 @@ class ServiceEntry {
       criteria: ServiceCriteria.fromDynamic(map['criteria']),
       evaluator: map['evaluator']?.toString(),
       id: (map['id'] ?? id).toString(),
+      onError: ServiceResponse.fromDynamic(map['onError']),
       steps: map['steps'],
     );
   }

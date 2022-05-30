@@ -24,8 +24,8 @@ class JwtArgs {
     }
 
     var key = map['key']?.toString();
-    var keyId = map['keyId']?.toString();
-    var keyType = map['keyType']?.toString();
+    var keyId = (map['keyId'] ?? map['key-id'] ?? 'key0').toString();
+    var keyType = (map['keyType'] ?? map['key-type'])?.toString();
 
     if (key == null || key.isEmpty) {
       throw ServiceException(
@@ -34,11 +34,12 @@ class JwtArgs {
     }
     if (keyType == null || keyType.isEmpty) {
       throw ServiceException(
-        body: '[JwtUtils]: missing "keyType" arg from the JWT',
+        body: '[JwtUtils]: missing "keyType"/"key-type" arg from the JWT',
       );
     } else if (keyType != 'HS256' && keyType != 'RS256') {
       throw ServiceException(
-        body: '[JwtUtils]: invalid "keyType" arg from the JWT: [${keyType}]',
+        body:
+            '[JwtUtils]: invalid "keyType"/"key-type" arg from the JWT: [${keyType}]',
       );
     }
 
