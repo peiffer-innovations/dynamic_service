@@ -30,7 +30,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
         // no-op
       }
 
-      var path = '^${criteria.path}\$';
+      var path = criteria.path;
       if (path.contains('/:')) {
         path = path.split('/').map((e) {
           var result = e;
@@ -41,7 +41,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
         }).join('/');
       }
 
-      var regex = RegExp(path);
+      var regex = RegExp('^$path\$');
 
       var reqJson = request.toJson();
       var template = Template(

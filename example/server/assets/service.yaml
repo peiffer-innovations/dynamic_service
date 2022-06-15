@@ -28,26 +28,6 @@ services:
           body: "Goodbye Cruel World!!!"
           content-type: text/plain
 
-  - id: get_greeting_regex
-    criteria:
-      method: GET
-      path: /greeting/regex/(?<firstName>[^/]*)/(?<lastName>[^/]*)
-    steps:
-      - type: set_response
-        with:
-          body: "Hi ${path['firstName']} ${path['lastName']}"
-          content-type: text/plain
-
-  - id: get_greeting_simple
-    criteria:
-      method: GET
-      path: /greeting/simple/:firstName/:lastName
-    steps:
-      - type: set_response
-        with:
-          body: "Hello ${path['firstName']} ${path['lastName']}"
-          content-type: text/plain
-
   - id: timestamp
     criteria:
       path: /now
@@ -110,81 +90,7 @@ services:
           content-type: image/jpeg
           $ref: https://peiffer-innovations.github.io/dynamic_service/pages/mountain.jpg
 
-  - id: for_each_array
-    criteria:
-      method: post
-      path: /for_each/array
-    steps:
-      - type: set_variables
-        with:
-          array:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-          message: ""
-      - type: for_each
-        with:
-          input: ${array}
-          steps:
-            - type: delay
-              with:
-                min: 100
-                max: 300
-            - type: set_variables
-              with:
-                message: |
-                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
-
-      - type: set_response
-        with:
-          content-type: text/plain
-          body: ${message}
-
-  - id: for_each_array_parallel
-    criteria:
-      method: post
-      path: /for_each/array/parallel
-    steps:
-      - type: set_variables
-        with:
-          array:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-          message: ""
-      - type: for_each
-        with:
-          input: ${array}
-          parallel: true
-          steps:
-            - type: delay
-              with:
-                min: 100
-                max: 300
-            - type: set_variables
-              with:
-                message: |
-                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
-
-      - type: set_response
-        with:
-          content-type: text/plain
-          body: ${message}
-
+  - $ref: assets://services/for_each.yaml
   - $ref: assets://services/greetings.yaml
   - $ref: assets://services/jwt.yaml
   - $ref: assets://services/users.yaml

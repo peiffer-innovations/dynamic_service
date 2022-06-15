@@ -14,3 +14,9 @@ jobs:
         uses: peiffer-innovations/actions-flutter-validate@v1.1.2
         with:
           flutter_package: false
+
+      - name: Validate
+        uses: peiffer-innovations/actions-flutter-validate@v1.1.2
+        with:
+          flutter_package: false
+          path: example

@@ -34,6 +34,7 @@ services:
       - type: set_response
         with:
           $ref: assets://body/user.json
+          content-type: application/json
 
   - id: user_body_john
     criteria:
@@ -48,6 +49,7 @@ services:
       - type: set_response
         with:
           $ref: assets://body/user.json
+          content-type: application/json
 
   - id: write_user
     criteria:
@@ -71,15 +73,15 @@ services:
         with:
           $ref: assets://body/user.json
           variable: response_body
-      - type: write_file
+      - type: write
         with:
-          path: "output/${json_path(body, '$.name.first').toLowerCase()}_${json_path(body, '$.name.last').toLowerCase()}.json"
-          # $ref: assets://body/user.json
+          path: "output://${json_path(body, '$.name.first').toLowerCase()}_${json_path(body, '$.name.last').toLowerCase()}.json"
           contents: ${response_body.toJson(2)}
       - type: set_response
         with:
           body: ${response_body.toJson()}
           code: 201
+          content-type: application/json
 
   - id: get_user
     criteria:
@@ -97,4 +99,5 @@ services:
       - type: set_response
         with:
           body: ${response_body.toJson()}
+          content-type: application/json
       - type: etag

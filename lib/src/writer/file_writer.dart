@@ -6,11 +6,13 @@ import 'package:logging/logging.dart';
 
 class FileWriter extends Writer {
   FileWriter({
+    this.path = 'output',
     this.protocol = 'output',
   });
 
   static final Logger _logger = Logger('FileWriter');
 
+  final String path;
   final String protocol;
 
   @override
@@ -34,7 +36,7 @@ class FileWriter extends Writer {
       throw ServiceException(body: 'Invalid path: [$path]');
     }
 
-    var file = File(path);
+    var file = File('${this.path}/$path');
     if (contents == null) {
       if (file.existsSync()) {
         file.deleteSync();

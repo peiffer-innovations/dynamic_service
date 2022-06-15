@@ -40,7 +40,8 @@ class ForEachStep extends ServiceStep {
     if (result is Map) {
       for (var entry in result.entries) {
         var chContext = ChildServiceContext(parent: context);
-        chContext.variables[variableName] = entry;
+        chContext.variables[indexName] = entry.key;
+        chContext.variables[variableName] = entry.value;
         var future = chContext.registry.executeDynamicSteps(
           steps,
           context: chContext,
@@ -49,11 +50,11 @@ class ForEachStep extends ServiceStep {
           futures.add(future);
           // ignore: unawaited_futures
           future.then((value) {
-            context.variables.addAll(chContext.variables);
+            context.variables.addAll(chContext.childVariables);
           });
         } else {
           await future;
-          context.variables.addAll(chContext.variables);
+          context.variables.addAll(chContext.childVariables);
         }
       }
     } else if (result is Iterable) {
@@ -70,11 +71,11 @@ class ForEachStep extends ServiceStep {
           futures.add(future);
           // ignore: unawaited_futures
           future.then((value) {
-            context.variables.addAll(chContext.variables);
+            context.variables.addAll(chContext.childVariables);
           });
         } else {
           await future;
-          context.variables.addAll(chContext.variables);
+          context.variables.addAll(chContext.childVariables);
         }
         index++;
       }

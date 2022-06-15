@@ -1,0 +1,141 @@
+services:
+  - id: for_each_array
+    criteria:
+      path: /for_each/array
+    steps:
+      - type: set_variables
+        with:
+          array:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          message: ""
+      - type: for_each
+        with:
+          input: ${array}
+          steps:
+            - type: delay
+              with:
+                min: 100
+                max: 300
+            - type: set_variables
+              with:
+                message: |
+                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: ${message}
+
+  - id: for_each_array_parallel
+    criteria:
+      path: /for_each/array/parallel
+    steps:
+      - type: set_variables
+        with:
+          array:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          message: ""
+      - type: for_each
+        with:
+          input: ${array}
+          parallel: true
+          steps:
+            - type: delay
+              with:
+                min: 100
+                max: 300
+            - type: set_variables
+              with:
+                message: |
+                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+
+  - id: for_each_map
+    criteria:
+      path: /for_each/map
+    steps:
+      - type: set_variables
+        with:
+          map:
+            one: one
+            two: two
+            three: three
+            four: four
+            five: five
+            six: six
+            seven: seven
+            eight: eight
+            nine: nine
+            ten: ten
+          message: ""
+      - type: for_each
+        with:
+          input: ${map}
+          steps:
+            - type: delay
+              with:
+                min: 100
+                max: 300
+            - type: set_variables
+              with:
+                message: |
+                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: ${message}
+
+  - id: for_each_map_parallel
+    criteria:
+      path: /for_each/map/parallel
+    steps:
+      - type: set_variables
+        with:
+          map:
+            one: one
+            two: two
+            three: three
+            four: four
+            five: five
+            six: six
+            seven: seven
+            eight: eight
+            nine: nine
+            ten: ten
+          message: ""
+      - type: for_each
+        with:
+          input: ${map}
+          parallel: true
+          steps:
+            - type: delay
+              with:
+                min: 100
+                max: 300
+            - type: set_variables
+              with:
+                message: |
+                  ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: ${message}

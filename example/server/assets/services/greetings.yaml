@@ -1,4 +1,24 @@
 services:
+  - id: get_greeting_regex
+    criteria:
+      method: GET
+      path: /greeting/regex/(?<firstName>[^/]*)/(?<lastName>[^/]*)
+    steps:
+      - type: set_response
+        with:
+          body: "Hi ${path['firstName']} ${path['lastName']}"
+          content-type: text/plain
+
+  - id: get_greeting_simple
+    criteria:
+      method: GET
+      path: /greeting/simple/:firstName/:lastName
+    steps:
+      - type: set_response
+        with:
+          body: "Hello ${path['firstName']} ${path['lastName']}"
+          content-type: text/plain
+
   - id: post_greeting_list
     criteria:
       method: POST
@@ -10,17 +30,6 @@ services:
       - type: set_response
         with:
           body: "Howdy ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
-          content-type: text/plain
-
-  - id: post_greeting_string
-    criteria:
-      method: POST
-      path: /greeting/string
-      body: '${json_path(body, "$.name.first").isNotEmpty == true && json_path(body, "$.name.last").isNotEmpty == true}'
-    steps:
-      - type: set_response
-        with:
-          body: "Yo ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
           content-type: text/plain
 
   - id: post_greeting_map
@@ -35,3 +44,15 @@ services:
         with:
           body: "Welcome ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
           content-type: text/plain
+
+  - id: post_greeting_string
+    criteria:
+      method: POST
+      path: /greeting/string
+      body: '${json_path(body, "$.name.first").isNotEmpty == true && json_path(body, "$.name.last").isNotEmpty == true}'
+    steps:
+      - type: set_response
+        with:
+          body: "Yo ${json_path(body, '$.name.first')} ${json_path(body, '$.name.last')}"
+          content-type: text/plain
+

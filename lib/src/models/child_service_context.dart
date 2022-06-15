@@ -4,12 +4,14 @@ import 'package:dynamic_service/dynamic_service.dart';
 class ChildServiceContext implements ServiceContext {
   ChildServiceContext({
     required this.parent,
-  }) : variables = _ChildMap(parent.variables);
+  }) : _variables = _ChildMap(parent.variables);
 
   final ServiceContext parent;
 
+  final _ChildMap _variables;
+
   @override
-  final Map<String, dynamic> variables;
+  Map<String, dynamic> get variables => _variables;
 
   @override
   ServiceEntry get entry => parent.entry;
@@ -22,6 +24,8 @@ class ChildServiceContext implements ServiceContext {
 
   @override
   ServiceResponse get response => parent.response;
+
+  Map<String, dynamic> get childVariables => _variables._parent;
 
   @override
   Map<String, dynamic> toJson() => {
