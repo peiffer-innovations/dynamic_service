@@ -15,7 +15,11 @@ class CreateJwtStep extends ServiceStep {
     Map<String, dynamic> args,
   ) async {
     for (var entry in args.entries) {
-      var jwtArgs = JwtArgs.fromDynamic(entry.value);
+      var value = <String, dynamic>{};
+      entry.value.forEach((k, v) => value[k] = process(context, v));
+
+      // var value = process(context, entry.value)!;
+      var jwtArgs = JwtArgs.fromDynamic(value);
 
       var jwt = JwtUtils.create(jwtArgs);
 

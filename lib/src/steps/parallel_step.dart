@@ -7,7 +7,7 @@ class ParallelStep extends ServiceStep {
           args: args,
           type: kType,
         );
-  static const kType = 'conditional';
+  static const kType = 'parallel';
 
   @override
   Future<void> applyStep(

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:jose/jose.dart';
+import 'package:x509/x509.dart';
 
 class JwtUtils {
   static String create(JwtArgs args) {
@@ -42,9 +43,9 @@ class JwtUtils {
   static Future<JsonWebToken> validate(
     String token, {
     required String key,
-    String? keyId,
   }) async {
     var parts = token.split('.');
+
     if (parts.length != 3) {
       throw ServiceException(
         body: '[JwtUtils]: Invalid token; [3] != [${parts.length}]',
@@ -52,11 +53,12 @@ class JwtUtils {
       );
     }
 
-    var header = json.decode(utf8.decode(base64.decode(parts[0])));
-    var jwt = JsonWebToken.unverified(parts.join('.'));
+    var header = json.decode(utf8.decode(_decodeBase64EncodedBytes(parts[0])));
+    var jwt = JsonWebToken.unverified(token);
 
     JsonWebKey jwk;
     var alg = header['alg'];
+    var keyId = header['kid'];
 
     switch (alg) {
       case 'HS256':
@@ -68,7 +70,12 @@ class JwtUtils {
         break;
 
       case 'RS256':
-        jwk = JsonWebKey.fromPem(key, keyId: keyId);
+        var pk = parsePem(key).first;
+        jwk = JsonWebKey.rsa(
+          exponent: pk.exponent,
+          keyId: keyId,
+          modulus: pk.modulus,
+        );
         break;
 
       default:
@@ -110,4 +117,8 @@ class JwtUtils {
 
     return JsonWebTokenClaims.fromJson(tokenJson);
   }
+
+  static List<int> _decodeBase64EncodedBytes(String encodedString) =>
+      base64Url.decode(encodedString +
+          List.filled((4 - encodedString.length % 4) % 4, '=').join());
 }

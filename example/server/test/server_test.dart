@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:jose/jose.dart';
 import 'package:rest_client/rest_client.dart';
 import 'package:test/test.dart';
 
@@ -21,7 +22,7 @@ Future<void> main() async {
         kPort,
       ]);
       process.stderr.listen((event) => print('${utf8.decode(event)}'));
-      process.stdout.listen((event) => print('${utf8.decode(event)}'));
+      process.stdout.listen((event) => stderr.write('${utf8.decode(event)}'));
 
       var connected = false;
 
@@ -355,7 +356,7 @@ Future<void> main() async {
         );
 
         try {
-          var res = await client.execute(
+          await client.execute(
             request: req,
             jsonResponse: false,
           );
@@ -386,8 +387,6 @@ Future<void> main() async {
         expect(res.statusCode, 200);
       });
     });
-
-    group('jwt', () {});
 
     group('users', () {
       test('user_inline_jane', () async {
@@ -524,7 +523,7 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
           fail('Expected RestException');
         } catch (e) {
           if (e is RestException) {
-            expect(404, e.response.statusCode);
+            expect(e.response.statusCode, 404);
           } else {
             fail('Expected RestException');
           }
@@ -598,6 +597,106 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
         });
         expect(res.headers['content-type'], 'application/json');
         expect(res.statusCode, 200);
+      });
+    });
+
+    group('jwt', () {
+      const kUsername = 'test_user';
+
+      final actualTest = (mode) async {
+        var req = Request(
+          body: json.encode({
+            'username': kUsername,
+          }),
+          url: 'http://localhost:$kPort/jwt/$mode/create',
+        );
+
+        var res = await client.execute(request: req);
+
+        var decoded = res.body;
+
+        var accessToken = decoded['accessToken'];
+        var refreshToken = decoded['refreshToken'];
+
+        var accessJwt = JsonWebToken.unverified(accessToken);
+        var refreshJwt = JsonWebToken.unverified(refreshToken);
+
+        expect(
+          DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch +
+                const Duration(minutes: 10).inMilliseconds,
+          ).millisecondsSinceEpoch,
+          lessThan(accessJwt.claims.expiry!.millisecondsSinceEpoch),
+        );
+        expect(
+          DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch +
+                const Duration(minutes: 20).inMilliseconds,
+          ).millisecondsSinceEpoch,
+          greaterThan(accessJwt.claims.expiry!.millisecondsSinceEpoch),
+        );
+
+        expect(
+          DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch +
+                const Duration(days: 10).inMilliseconds,
+          ).millisecondsSinceEpoch,
+          lessThan(refreshJwt.claims.expiry!.millisecondsSinceEpoch),
+        );
+        expect(
+          DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch +
+                const Duration(days: 20).inMilliseconds,
+          ).millisecondsSinceEpoch,
+          greaterThan(refreshJwt.claims.expiry!.millisecondsSinceEpoch),
+        );
+
+        expect(accessJwt.claims.subject, kUsername);
+        expect(refreshJwt.claims.subject, kUsername);
+
+        req = Request(
+          headers: {'x-authorization': accessToken},
+          url: 'http://localhost:$kPort/jwt/$mode/refresh',
+        );
+
+        // Can only refresh a refresh token, not an access one
+        try {
+          await client.execute(request: req);
+          fail('Expected exception');
+        } catch (e) {
+          if (e is RestException) {
+            var res = e.response;
+            expect(res.body, 'Not a valid refresh token');
+          }
+        }
+
+        req = Request(
+          headers: {'x-authorization': refreshToken},
+          url: 'http://localhost:$kPort/jwt/$mode/refresh',
+        );
+        res = await client.execute(request: req);
+        expect(res.body, 'Valid refresh token');
+
+        req = Request(
+          headers: {'x-authorization': accessToken},
+          url: 'http://localhost:$kPort/jwt/$mode/validate',
+        );
+        res = await client.execute(request: req);
+        expect(res.body, 'Hello, $kUsername');
+
+        req = Request(
+          headers: {'x-authorization': refreshToken},
+          url: 'http://localhost:$kPort/jwt/$mode/validate',
+        );
+        res = await client.execute(request: req);
+        expect(res.body, 'Hello, $kUsername');
+      };
+
+      test('jwt_hmac', () async {
+        await actualTest('hmac');
+      });
+      test('jwt_rsa', () async {
+        await actualTest('rsa');
       });
     });
   }, timeout: const Timeout(Duration(seconds: 60)));

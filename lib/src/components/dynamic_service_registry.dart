@@ -36,6 +36,7 @@ class DynamicServiceRegistry {
   };
   final List<RefLoader> _refLoaders;
   final Map<String, StepBuilder> _steps = {
+    ConditionalStep.kType: (args) => ConditionalStep(args: args),
     CreateJwtStep.kType: (args) => CreateJwtStep(args: args),
     DelayStep.kType: (args) => DelayStep(args: args),
     ETagStep.kType: (args) => ETagStep(args: args),

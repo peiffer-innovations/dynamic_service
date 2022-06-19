@@ -15,6 +15,7 @@ class ValidateJwtStep extends ServiceStep {
     Map<String, dynamic> args,
   ) async {
     var key = process(context, args['key']);
+
     if (key == null) {
       throw ServiceException(
         code: 403,
@@ -23,7 +24,6 @@ class ValidateJwtStep extends ServiceStep {
     }
 
     var token = process(context, args[StandardVariableNames.kNameToken]);
-
     if (token == null) {
       throw ServiceException(
         code: 403,

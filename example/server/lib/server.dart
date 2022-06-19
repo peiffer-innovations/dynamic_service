@@ -25,6 +25,7 @@ class Server {
       var body = record.object ?? record.message;
 
       var output = {
+        'name': record.loggerName,
         'level': record.level.name,
         'time': record.time.toString(),
       };

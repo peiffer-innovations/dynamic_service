@@ -4,7 +4,7 @@ services:
       method: post
       path: /jwt/hmac/create
     steps:
-      - set_variables:
+      - type: set_variables
         with:
           $ref: assets://keys/hmac.txt
           variable: key
@@ -16,54 +16,55 @@ services:
             key: ${key}
             key-type: HS256
             claims:
-              username: ${request.body[]}
+              sub: ${body['username']}
           refreshToken:
             expires: ${days(14).inSeconds}
             key: ${key}
             key-type: HS256
             claims:
               refresh: true
-              username: ${request.body[]}
+              sub: ${body['username']}
+
+      - type: set_response
+        with:
+          body: '{"accessToken": "${accessToken}", "refreshToken": "${refreshToken}"}'
 
   - id: jwt_hmac_refresh
     criteria:
       method: get
-      path: /jwt/hmac/verify
+      path: /jwt/hmac/refresh
     steps:
-      - set_variables:
+      - type: set_variables
         with:
           $ref: assets://keys/hmac.txt
           variable: key
 
       - type: validate_jwt
         with:
-          accessToken:
-            key: ${key}
-            token: ${headers['x-authorization']}
-            variable: claims
+          key: ${key}
+          token: ${headers['x-authorization']}
+          variable: claims
 
       - type: conditional
         with:
-          condition: ${claims['refresh']?.toString() == 'true'}
-          false:
-            steps:
-              - type: set_response
-                with:
-                  content-type: text/plain
-                  body: Not a valid refresh token
-          true:
-            steps:
-              - type: set_response
-                with:
-                  content-type: text/plain
-                  body: Valid refresh token
+          condition: ${(claims['refresh'] ?? '').toString() == 'true'}
+          steps-false:
+            - type: set_response
+              with:
+                code: 401
+                content-type: text/plain
+                body: Not a valid refresh token
+          steps-true:
+            - type: set_response
+              with:
+                content-type: text/plain
+                body: Valid refresh token
 
   - id: jwt_hmac_validate
     criteria:
-      method: post
       path: /jwt/hmac/validate
     steps:
-      - set_variables:
+      - type: set_variables
         with:
           $ref: assets://keys/hmac.txt
           variable: key
@@ -77,4 +78,93 @@ services:
       - type: set_response
         with:
           content-type: text/plain
-          body: Hello, ${claims['username']}
+          body: Hello, ${claims['sub']}
+
+  - id: jwt_rsa_create
+    criteria:
+      method: post
+      path: /jwt/rsa/create
+    steps:
+      - type: set_variables
+        with:
+          $ref: assets://keys/privateKey.pem
+          variable: key
+
+      - type: create_jwt
+        with:
+          accessToken:
+            expires: ${minutes(15).inSeconds}
+            key: ${key}
+            key-type: RS256
+            claims:
+              sub: ${body['username']}
+          refreshToken:
+            expires: ${days(14).inSeconds}
+            key: ${key}
+            key-type: RS256
+            claims:
+              refresh: true
+              sub: ${body['username']}
+
+      - type: set_response
+        with:
+          body: '{"accessToken": "${accessToken}", "refreshToken": "${refreshToken}"}'
+
+  - id: jwt_rsa_refresh
+    criteria:
+      method: get
+      path: /jwt/rsa/refresh
+    steps:
+      - type: set_variables
+        with:
+          $ref: assets://keys/publicKey.pem
+          variable: pubKey
+      - type: set_variables
+        with:
+          $ref: assets://keys/privateKey.pem
+          variable: key
+
+      - type: validate_jwt
+        with:
+          key: ${pubKey}
+          token: ${headers['x-authorization']}
+          variable: claims
+
+      - type: conditional
+        with:
+          condition: ${(claims['refresh'] ?? '').toString() == 'true'}
+          steps-false:
+            - type: set_response
+              with:
+                code: 401
+                content-type: text/plain
+                body: Not a valid refresh token
+          steps-true:
+            - type: set_response
+              with:
+                content-type: text/plain
+                body: Valid refresh token
+
+  - id: jwt_rsa_validate
+    criteria:
+      path: /jwt/rsa/validate
+    steps:
+      - type: set_variables
+        with:
+          $ref: assets://keys/publicKey.pem
+          variable: pubKey
+      - type: set_variables
+        with:
+          $ref: assets://keys/privateKey.pem
+          variable: key
+
+      - type: validate_jwt
+        with:
+          key: ${pubKey}
+          token: ${headers['x-authorization']}
+          variable: claims
+
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: Hello, ${claims['sub']}

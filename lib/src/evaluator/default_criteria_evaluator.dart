@@ -167,6 +167,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
       isMatch = isMatch && evaluate(criteria.body);
 
       if (isMatch) {
+        variables['headers'] = request.headers;
         variables['request'] = req;
         result = ServiceContext(
           entry: entry,

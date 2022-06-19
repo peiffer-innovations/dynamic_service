@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
 
@@ -44,7 +46,11 @@ class JwtArgs {
     }
 
     return JwtArgs(
-      claims: map['claims'],
+      claims: Map<String, dynamic>.from(
+        map['claims'] is String
+            ? json.decode(map['claims'])
+            : (map['claims'] ?? {}),
+      ),
       expires: JsonClass.parseDurationFromSeconds(map['expires']) ??
           const Duration(minutes: 30),
       key: key,

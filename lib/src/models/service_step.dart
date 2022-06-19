@@ -25,16 +25,27 @@ abstract class ServiceStep extends JsonClass {
     }
 
     var type = map['type'];
+    if (type == null) {
+      throw Exception('[ServiceStep]: type is null\n$map');
+    }
     var args = map['with'] ?? const <String, dynamic>{};
 
-    if (args is Map) {
-      args = Map<String, dynamic>.from(args);
-    }
+    try {
+      if (args is Map) {
+        args = Map<String, dynamic>.from(args);
+      }
 
-    result = registry.getStep(
-      args: args,
-      type: type,
-    );
+      result = registry.getStep(
+        args: args,
+        type: type,
+      );
+    } catch (e) {
+      if (e is ServiceException) {
+        rethrow;
+      }
+
+      throw Exception('[ServiceStep]: error building step\n$map');
+    }
 
     return result;
   }
