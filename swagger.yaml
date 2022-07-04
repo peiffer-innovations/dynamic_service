@@ -1,0 +1,662 @@
+swagger: "2.0"
+info:
+  title: Example APIs
+  description: API documentation for the Dynamic Service Example App
+  version: 1.0.0
+schemes:
+  - http
+basePath: /
+host: localhost:8080
+paths:
+  /health-check:
+    get:
+      summary: Entrypoint to return the configuration for the application
+      description: |
+        Returns the configuration for the application.
+      tags:
+        - Core
+      responses:
+        "204":
+          description: Simple Health Check endpoint that will always return 204 if the server is responding
+
+  /hello:
+    get:
+      produces:
+        - text/plain
+      summary: Simple "Hello World!" API
+      tags:
+        - Core
+      responses:
+        "200":
+          description: "Hello World!"
+          schema:
+            type: string
+            example: Hello World
+  /goodbye:
+    get:
+      produces:
+        - text/plain
+      summary: Simple "Goodbye Crue World!!!" API
+      tags:
+        - Core
+      responses:
+        "200":
+          description: "Goodbye Crue World!!!"
+          schema:
+            type: string
+            example: Goodbye Crue World!!!
+  /now:
+    get:
+      produces:
+        - application/json
+      summary: Responds with the current timestamp in both server local time and UTC 
+      tags:
+        - Core
+      responses:
+        "200":
+          description: Responds with the current timestamp in both server local time and UTC
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              local:
+                description: The current time in "yyyy-MM-dd HH:mm:ss.SSSSSSS" format
+                type: string
+                example: "2022-07-04 12:54:58.922373"
+              utc:
+                description: The current time in "yyyy-MM-dd HH:mm:ss.SSSSSSS'Z'" format
+                type: string
+                example: "2022-07-04 16:54:58.920025Z"
+            
+  /generate-name/local:
+    get:
+      produces:
+        - application/json
+      summary: Loads a list of common first and last names over the network and uses a local file to create the response
+      tags:
+        - Name Generation
+      responses:
+        "200":
+          description: Generates a random first and last name for a fictional user
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              firstName:
+                description: The generated first name
+                type: string
+              lastName:
+                description: The generated last name.
+                type: string
+  /generate-name/network:
+    get:
+      produces:
+        - application/json
+      summary: Loads a list of common first and last names over the network and uses a network JSON file to create the response
+      tags:
+        - Name Generation
+      responses:
+        "200":
+          description: Generates a random first and last name for a fictional user
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              firstName:
+                description: The generated first name
+                type: string
+              lastName:
+                description: The generated last name.
+                type: string
+  /generate-name/network/yaml:
+    get:
+      produces:
+        - application/json
+      summary: Loads a list of common first and last names over the network and uses a local file to create the response
+      tags:
+        - Name Generation
+      responses:
+        "200":
+          description: Generates a random first and last name for a fictional user
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              firstName:
+                description: The generated first name
+                type: string
+              lastName:
+                description: The generated last name.
+                type: string
+                
+  /weather:
+    get:
+      produces:
+        - image/svg+xml
+      summary: Returns a SVG from the local system
+      tags:
+        - Image
+      responses:
+        "200":
+          description: The SVG image data
+          schema:
+            type: string
+  /mountain:
+    get:
+      produces:
+        - image/jpg
+      summary: Returns a JPEG from the local system
+      tags:
+        - Image
+      responses:
+        "200":
+          description: The JPEG image data
+  /mountain_network:
+    get:
+      produces:
+        - image/jpg
+      summary: Returns a JPEG from the network
+      tags:
+        - Image
+      responses:
+        "200":
+          description: The JPEG image data
+                
+  /parallel:
+    get:
+      produces:
+        - text/plain
+      summary: Runs multiple steps in parallel and then returns a result
+      tags:
+        - Advanced
+      responses:
+        "200":
+          description: The response body
+          schema:
+            type: string
+            example: Done
+  /for_each/array:
+    get:
+      produces:
+        - text/plain
+      summary: Iterates over an array and executes a step each time in series
+      tags:
+        - Advanced
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /for_each/array/parallel:
+    get:
+      produces:
+        - text/plain
+      summary: Iterates over an array and executes a step each time in parallel
+      tags:
+        - Advanced
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /for_each/map:
+    get:
+      produces:
+        - text/plain
+      summary: Iterates over a map and executes a step each time in series
+      tags:
+        - Advanced
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /for_each/map/parallel:
+    get:
+      produces:
+        - text/plain
+      summary: Iterates over an map and executes a step each time in parallel
+      tags:
+        - Advanced
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+
+  /greeting/regex/{firstName}/{lastName}:
+    get:
+      produces:
+        - text/plain
+      summary: Generates a greeting for the person named via the path and detected using RegEx
+      tags:
+        - Greeting
+      parameters:
+        - in: path
+          name: firstName
+          required: true
+          type: string
+        - in: path
+          name: lastName
+          required: true
+          type: string            
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /greeting/simple/{firstName}/{lastName}:
+    get:
+      produces:
+        - text/plain
+      summary: Generates a greeting for the person named via the path and detected using the simple sintax
+      tags:
+        - Greeting
+      parameters:
+        - in: path
+          name: firstName
+          required: true
+          type: string
+        - in: path
+          name: lastName
+          required: true
+          type: string            
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /greeting/list:
+    post:
+      produces:
+        - text/plain
+      summary: Selects the response using a list based filter
+      tags:
+        - Greeting
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required: 
+              - name
+            properties:
+              name:
+                type: object
+                additionalProperties: false
+                required: 
+                  - first
+                  - last
+                properties:
+                  first:
+                    type: string
+                    description: First name to use
+                  last:
+                    type: string
+                    description: Last name to use
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /greeting/map:
+    post:
+      produces:
+        - text/plain
+      summary: Selects the response using a map based filter
+      tags:
+        - Greeting
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required: 
+              - name
+            properties:
+              name:
+                type: object
+                additionalProperties: false
+                required: 
+                  - first
+                  - last
+                properties:
+                  first:
+                    type: string
+                    description: First name to use
+                  last:
+                    type: string
+                    description: Last name to use
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+  /greeting/string:
+    post:
+      produces:
+        - text/plain
+      summary: Selects the response using a singular template based filter
+      tags:
+        - Greeting
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required: 
+              - name
+            properties:
+              name:
+                type: object
+                additionalProperties: false
+                required: 
+                  - first
+                  - last
+                properties:
+                  first:
+                    type: string
+                    description: First name to use
+                  last:
+                    type: string
+                    description: Last name to use
+      responses:
+        "200":
+          description: The plain text response body
+          schema:
+            type: string
+
+  /jwt/hmac/create:
+    post:
+      produces:
+        - application/json
+      summary: Creates an OAuth-like Access and Refresh token using the JWT standard and returns them to the client.  The token will signed via HMAC using SHA-256 encoding
+      tags:
+        - Authentication
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required: 
+              - username
+            properties:
+              username:
+                type: string
+                description: The username to put into the claims of the JWT
+      responses:
+        "200":
+          description: The set of JWTs for simulated authentication
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - accessToken
+              - refreshToken
+            properties:
+              accessToken:
+                type: string
+                description: A signed JWT that could, in theory, be used as an access token.
+              refreshToken:
+                type: string
+                description: A signed JWT that could, in theory, be used as a refresh token.
+  /jwt/hmac/refresh:
+    get:
+      produces:
+        - text/plain
+      summary: Accepts a refresh token and will respond with a success or failure message based on whether the token was considered valid or not
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-authorization
+          type: string
+          required: true
+
+      responses:
+        "200":
+          description: A message that states the token was considered to be a valid refresh token
+          schema:
+            type: string
+        "401":
+          description: A response that states the JWT was not a valid refresh token issued by this service.
+  /jwt/hmac/validate:
+    get:
+      produces:
+        - text/plain
+      summary: Accepts a self-service issued JWT, validates the signature, and returns with a greeting if everything is successful
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-authorization
+          type: string
+          required: true
+
+      responses:
+        "200":
+          description: A message that states the token was considered to be a valid saying hello to whomever the `sub` field was
+          schema:
+            type: string
+        "401":
+          description: A response that states the JWT was not a valid token issued by this service.
+
+  /jwt/rsa/create:
+    post:
+      produces:
+        - application/json
+      summary: Creates an OAuth-like Access and Refresh token using the JWT standard and returns them to the client.  The token will signed via RSA Public / Private keys
+      tags:
+        - Authentication
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            additionalProperties: false
+            required: 
+              - username
+            properties:
+              username:
+                type: string
+                description: The username to put into the claims of the JWT
+      responses:
+        "200":
+          description: The set of JWTs for simulated authentication
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - accessToken
+              - refreshToken
+            properties:
+              accessToken:
+                type: string
+                description: A signed JWT that could, in theory, be used as an access token.
+              refreshToken:
+                type: string
+                description: A signed JWT that could, in theory, be used as a refresh token.
+  /jwt/rsa/refresh:
+    get:
+      produces:
+        - text/plain
+      summary: Accepts a refresh token and will respond with a success or failure message based on whether the token was considered valid or not
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-authorization
+          type: string
+          required: true
+
+      responses:
+        "200":
+          description: A message that states the token was considered to be a valid refresh token
+          schema:
+            type: string
+        "401":
+          description: A response that states the JWT was not a valid refresh token issued by this service.
+  /jwt/rsa/validate:
+    get:
+      produces:
+        - text/plain
+      summary: Accepts a self-service issued JWT, validates the signature, and returns with a greeting if everything is successful
+      tags:
+        - Authentication
+      parameters:
+        - in: header
+          name: x-authorization
+          type: string
+          required: true
+
+      responses:
+        "200":
+          description: A message that states the token was considered to be a valid saying hello to whomever the `sub` field was
+          schema:
+            type: string
+        "401":
+          description: A response that states the JWT was not a valid token issued by this service.
+
+  /user/inline/jane:
+    get:
+      produces:
+        - text/plain
+      summary: Simple API showing variable usage and sub-steps
+      tags:
+        - User
+      responses:
+        "200":
+          description: Returns a generic hello message
+          schema:
+            type: string
+  /user/inline/john:
+    get:
+      produces:
+        - text/plain
+      summary: Simple API showing variable usage and sub-steps
+      tags:
+        - User
+      responses:
+        "200":
+          description: Returns a generic hello message
+          schema:
+            type: string
+  /user/body/jane:
+    get:
+      produces:
+        - application/json
+      summary: Simple API showing variable usage, sub-steps, and a included JSON response body with transformations
+      tags:
+        - User
+      responses:
+        "200":
+          description: The user response body
+          schema:
+            $ref: "#/definitions/UserResponse"
+  /user/body/john:
+    get:
+      produces:
+        - application/json
+      summary: Simple API showing variable usage, sub-steps, and a included JSON response body with transformations
+      tags:
+        - User
+      responses:
+        "200":
+          description: The user response body
+          schema:
+            $ref: "#/definitions/UserResponse"
+  /user:
+    put:
+      produces:
+        - application/json
+      summary: API that writes a user to temporary storage for later retrieval
+      tags:
+        - User
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - name
+            properties:
+              name:
+                additionalProperties: false
+                required:
+                  - first
+                  - last
+                properties:
+                  first:
+                    type: string
+                  last:
+                    type: string
+      responses:
+        "201":
+          description: The user information that has been stored
+          schema:
+            $ref: "#/definitions/UserResponse"
+  /user/{firstName}/{lastName}:
+    get:
+      produces:
+        - application/json
+      summary: API that reads a user from temporary storage and returns the data from it
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: firstName
+          type: string
+          required: true
+          description: The first name of the user
+        - in: path
+          name: lastName
+          type: string
+          required: true
+          description: The last name of the user
+      responses:
+        "200":
+          description: The user information that has been retrieved
+          schema:
+            $ref: "#/definitions/UserResponse"
+        "404":
+          description: The user cannot be located
+
+definitions:
+  UserResponse:
+    type: object
+    required: 
+      - standard
+      - upper
+      - lower
+    additionalProperties: false
+    properties:
+      upper:
+        type: object
+        additionalProperties: false
+        required:
+          - greeting
+          - name
+        properties:
+          greeting:
+            type: string
+          name:
+            type: object
+            additionalProperties: false
+            required:
+              - first
+              - last
+            properties:
+              first:
+                type: string
+              last:
+                type: string
