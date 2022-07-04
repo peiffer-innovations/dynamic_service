@@ -19,7 +19,7 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         with:
           output: swagger
-          spec-file: example/swagger.yaml
+          spec-file: example/server/swagger.yaml
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
