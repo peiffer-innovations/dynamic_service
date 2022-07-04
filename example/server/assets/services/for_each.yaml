@@ -1,7 +1,7 @@
 services:
   - id: for_each_array
     criteria:
-      path: /for_each/array
+      path: /for-each/array
     steps:
       - type: set_variables
         with:
@@ -29,7 +29,6 @@ services:
               with:
                 message: |
                   ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
-
       - type: set_response
         with:
           content-type: text/plain
@@ -37,7 +36,7 @@ services:
 
   - id: for_each_array_parallel
     criteria:
-      path: /for_each/array/parallel
+      path: /for-each/array/parallel
     steps:
       - type: set_variables
         with:
@@ -66,10 +65,14 @@ services:
               with:
                 message: |
                   ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: ${message}
 
   - id: for_each_map
     criteria:
-      path: /for_each/map
+      path: /for-each/map
     steps:
       - type: set_variables
         with:
@@ -97,7 +100,6 @@ services:
               with:
                 message: |
                   ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
-
       - type: set_response
         with:
           content-type: text/plain
@@ -105,7 +107,7 @@ services:
 
   - id: for_each_map_parallel
     criteria:
-      path: /for_each/map/parallel
+      path: /for-each/map/parallel
     steps:
       - type: set_variables
         with:
@@ -134,7 +136,6 @@ services:
               with:
                 message: |
                   ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
-
       - type: set_response
         with:
           content-type: text/plain

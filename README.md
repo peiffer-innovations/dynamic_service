@@ -7,3 +7,7 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # dynamic_service
+
+## Introduction
+
+The Dynamic Servvice is a Dart based service that 

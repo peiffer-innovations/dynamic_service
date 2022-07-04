@@ -172,13 +172,31 @@ Future<void> main() async {
         expect(res.headers['content-type'], 'image/jpeg');
         expect(res.statusCode, 200);
       });
+
+      test('parallel', () async {
+        var req = Request(url: 'http://localhost:$kPort/parallel');
+        var start = DateTime.now().millisecondsSinceEpoch;
+        var res = await client.execute(
+          request: req,
+        );
+
+        var end = DateTime.now().millisecondsSinceEpoch;
+        var delta = end - start;
+
+        expect(delta, lessThan(2000));
+        expect(delta, greaterThan(500));
+
+        expect(res.headers['content-type'], 'text/plain');
+        expect(res.body, 'done');
+        expect(res.statusCode, 200);
+      });
     });
 
     group('for_each', () {
       test('for_each_array', () async {
         var req = Request(
           method: RequestMethod.get,
-          url: 'http://localhost:$kPort/for_each/array',
+          url: 'http://localhost:$kPort/for-each/array',
         );
 
         var startTime = DateTime.now().millisecondsSinceEpoch;
@@ -193,12 +211,13 @@ Future<void> main() async {
         var total = endTime - startTime;
         expect(total, lessThan(4000));
         expect(total, greaterThan(990));
+        expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_array_parallel', () async {
         var req = Request(
           method: RequestMethod.get,
-          url: 'http://localhost:$kPort/for_each/array/parallel',
+          url: 'http://localhost:$kPort/for-each/array/parallel',
         );
 
         var startTime = DateTime.now().millisecondsSinceEpoch;
@@ -213,12 +232,13 @@ Future<void> main() async {
         var total = endTime - startTime;
         expect(total, lessThan(1000));
         expect(total, greaterThan(90));
+        expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_map', () async {
         var req = Request(
           method: RequestMethod.get,
-          url: 'http://localhost:$kPort/for_each/map',
+          url: 'http://localhost:$kPort/for-each/map',
         );
 
         var startTime = DateTime.now().millisecondsSinceEpoch;
@@ -233,12 +253,13 @@ Future<void> main() async {
         var total = endTime - startTime;
         expect(total, lessThan(4000));
         expect(total, greaterThan(990));
+        expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_map_parallel', () async {
         var req = Request(
           method: RequestMethod.get,
-          url: 'http://localhost:$kPort/for_each/map/parallel',
+          url: 'http://localhost:$kPort/for-each/map/parallel',
         );
 
         var startTime = DateTime.now().millisecondsSinceEpoch;
@@ -253,6 +274,7 @@ Future<void> main() async {
         var total = endTime - startTime;
         expect(total, lessThan(1000));
         expect(total, greaterThan(90));
+        expect(res.body.isNotEmpty, true);
       });
     });
 

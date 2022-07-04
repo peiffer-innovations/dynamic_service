@@ -90,6 +90,42 @@ services:
           content-type: image/jpeg
           $ref: https://peiffer-innovations.github.io/dynamic_service/pages/mountain.jpg
 
+  - id: parallel
+    criteria:
+      path: /parallel
+    steps:
+      - type: parallel
+        with:
+          steps:
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+            - type: delay
+              with:
+                min: 500
+                max: 1000
+      - type: set_response
+        with:
+          content-type: text/plain
+          body: done
+
   - $ref: assets://services/for_each.yaml
   - $ref: assets://services/greetings.yaml
   - $ref: assets://services/jwt.yaml

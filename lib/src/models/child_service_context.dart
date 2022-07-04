@@ -1,11 +1,20 @@
 import 'package:collection/collection.dart';
 import 'package:dynamic_service/dynamic_service.dart';
 
+/// Context that is able to have it's own unique set of variables, but supports
+/// providing variables from a parent context.
 class ChildServiceContext implements ServiceContext {
+  /// Constructs the context with the given [parent].  Whenever variables are
+  /// requested, this context will be searched first and they will be returned
+  /// from the the parent when not found in the child context.
   ChildServiceContext({
     required this.parent,
-  }) : _variables = _ChildMap(parent.variables);
+  }) : _variables = _ChildMap(
+          delegate: {},
+          parent: parent.variables,
+        );
 
+  /// The [parent] for this child context.
   final ServiceContext parent;
 
   final _ChildMap _variables;
@@ -25,7 +34,7 @@ class ChildServiceContext implements ServiceContext {
   @override
   ServiceResponse get response => parent.response;
 
-  Map<String, dynamic> get childVariables => _variables._parent;
+  Map<String, dynamic> get childVariables => _variables._delegate;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -36,10 +45,14 @@ class ChildServiceContext implements ServiceContext {
 }
 
 class _ChildMap extends DelegatingMap<String, dynamic> {
-  _ChildMap(Map<String, dynamic> parent)
-      : _parent = parent,
-        super({});
+  _ChildMap({
+    required Map<String, dynamic> delegate,
+    required Map<String, dynamic> parent,
+  })  : _delegate = delegate,
+        _parent = parent,
+        super(delegate);
 
+  final Map<String, dynamic> _delegate;
   final Map<String, dynamic> _parent;
 
   @override

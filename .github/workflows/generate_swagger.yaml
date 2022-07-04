@@ -1,0 +1,28 @@
+name: Generate Swagger UI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**/swagger.yaml"
+      - ".github/workflows/generate_swagger.yaml"
+
+jobs:
+  generate_swagger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Generate Swagger
+        uses: Legion2/swagger-ui-action@v1
+        with:
+          output: swagger
+          spec-file: example/swagger.yaml
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: swagger
