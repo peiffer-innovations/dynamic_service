@@ -1,14 +1,14 @@
 name: dynamic_service
 description: A Dart based service for handling dynamic requests and responses
 homepage: https://github.com/peiffer-innovations/dynamic_service
-version: 0.9.1
+version: 0.9.1+1
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   collection: ^1.16.0
-  crypto: ^3.0.2
+  crypto: ^3.0.1
   encrypt: ^5.0.1
   http: ^0.13.4
   intl: ^0.17.0
@@ -33,15 +33,15 @@ dev_dependencies:
   test: ^1.21.1
   test_process: ^2.0.2
 
-ignore_updates:
-  # Ignoring everything in flutter_test as those are all point-in-time entries
-  # can't upgrade without upgrading Flutter itself.
+ignore_updates: 
+  - 'archive'
   - 'async'
   - 'boolean_selector'
   - 'characters'
   - 'charcode'
   - 'collection'
   - 'clock'
+  - 'crypto'
   - 'fake_async'
   - 'file'
   - 'matcher'
@@ -52,5 +52,9 @@ ignore_updates:
   - 'stack_trace'
   - 'stream_channel'
   - 'string_scanner'
+  - 'sync_http'
   - 'term_glyph'
+  - 'test_api'
+  - 'typed_data'
   - 'vector_math'
+  - 'webdriver'

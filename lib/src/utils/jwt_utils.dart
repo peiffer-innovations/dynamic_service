@@ -56,6 +56,14 @@ class JwtUtils {
     var header = json.decode(utf8.decode(_decodeBase64EncodedBytes(parts[0])));
     var jwt = JsonWebToken.unverified(token);
 
+    if ((jwt.claims.expiry?.millisecondsSinceEpoch ?? 0) <
+        DateTime.now().millisecondsSinceEpoch) {
+      throw ServiceException(
+        code: 403,
+        body: 'Token is expired',
+      );
+    }
+
     JsonWebKey jwk;
     var alg = header['alg'];
     var keyId = header['kid'];

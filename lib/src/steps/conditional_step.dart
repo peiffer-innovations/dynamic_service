@@ -1,7 +1,6 @@
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
 import 'package:logging/logging.dart';
-import 'package:yaon/yaon.dart' as yaon;
 
 class ConditionalStep extends ServiceStep {
   ConditionalStep({
@@ -22,14 +21,7 @@ class ConditionalStep extends ServiceStep {
     var whenFalse = args['steps-false'];
     var whenTrue = args['steps-true'];
 
-    var condition = args['condition'];
-    if (condition is! String) {
-      try {
-        condition = yaon.parse(condition);
-      } catch (_) {
-        // no-op
-      }
-    }
+    var condition = args['condition']?.toString();
 
     var processed = process(context, condition);
     var result = JsonClass.parseBool(processed);
