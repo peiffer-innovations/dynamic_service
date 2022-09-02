@@ -3,9 +3,9 @@ steps:
     with:
       requests:
         - id: first
-          url: https://peiffer-innovations.github.io/dynamic_service/pages/first_names.json
+          url: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/first_names.json
         - id: last
-          url: https://peiffer-innovations.github.io/dynamic_service/pages/last_names.json
+          url: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/last_names.json
   - type: shuffle_list
     with:
       list: ${json_path(load_network, '$.first.body.names')}

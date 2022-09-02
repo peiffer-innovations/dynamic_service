@@ -134,7 +134,7 @@ Future<void> main() async {
 
           if (!diff) {
             throw Exception(
-              'After 5 executions, the names were the same each time. Failing!',
+              'After 5 executions, the names were the same each time. Failing!\n$url',
             );
           }
         }

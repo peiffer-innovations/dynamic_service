@@ -15,7 +15,7 @@ services:
     steps:
       - type: set_response
         with:
-          body: "Hello World!"
+          body: 'Hello World!'
           content-type: text/plain
 
   - id: goodbye
@@ -25,7 +25,7 @@ services:
     steps:
       - type: set_response
         with:
-          body: "Goodbye Cruel World!!!"
+          body: 'Goodbye Cruel World!!!'
           content-type: text/plain
 
   - id: timestamp
@@ -43,7 +43,7 @@ services:
       - $ref: assets://steps/random_names.yaml
       - type: set_response
         with:
-          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/response.json
+          $ref: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/response.json
 
   - id: name_generator_network_yaml
     criteria:
@@ -52,7 +52,7 @@ services:
       - $ref: assets://steps/random_names.yaml
       - type: set_response
         with:
-          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/response.yaml
+          $ref: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/response.yaml
 
   - id: name_generator_local
     criteria:
@@ -88,7 +88,7 @@ services:
       - type: set_response
         with:
           content-type: image/jpeg
-          $ref: https://peiffer-innovations.github.io/dynamic_service/pages/mountain.jpg
+          $ref: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/mountain.jpg
 
   - id: parallel
     criteria:
