@@ -18,5 +18,11 @@ jobs:
       - name: Validate
         uses: peiffer-innovations/actions-flutter-validate@v1.1.2
         with:
+          flutter_package: true
+          path: example/client
+
+      - name: Validate
+        uses: peiffer-innovations/actions-flutter-validate@v1.1.2
+        with:
           flutter_package: false
-          path: example
+          path: example/server
