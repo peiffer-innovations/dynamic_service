@@ -485,7 +485,10 @@ class _ShowResponsePageState extends State<_ShowResponsePage> {
           title: const Text('Error'),
         ),
       );
-      Navigator.of(context).pop(null);
+
+      if (mounted) {
+        Navigator.of(context).pop(null);
+      }
     } else {
       _executionTime =
           DateTime.now().millisecondsSinceEpoch - start.millisecondsSinceEpoch;
