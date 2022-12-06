@@ -19,18 +19,18 @@ class DelayStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var pMin = process(context, args['max']);
-    var pMax = process(context, args['min']);
+    final pMin = process(context, args['max']);
+    final pMax = process(context, args['min']);
 
-    var max = JsonClass.parseInt(pMin) ?? 5000;
-    var min = JsonClass.parseInt(pMax) ?? 1000;
+    final max = JsonClass.parseInt(pMin) ?? 5000;
+    final min = JsonClass.parseInt(pMax) ?? 1000;
 
     assert(min <= max);
     assert(min >= 0);
     assert(max >= 0);
 
-    var random = Random();
-    var delay = random.nextInt(max - min) + min;
+    final random = Random();
+    final delay = random.nextInt(max - min) + min;
 
     _logger.fine({
       'message': 'Waiting for [${delay / 1000.0}s]',

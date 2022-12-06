@@ -11,20 +11,20 @@ import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 
 class Server {
   Future<void> start(List<String> args) async {
-    var parser = ArgParser();
+    final parser = ArgParser();
     parser.addOption(
       'port',
       abbr: 'p',
       help: 'Port to run the application on',
       defaultsTo: '8080',
     );
-    var params = parser.parse(args);
+    final params = parser.parse(args);
 
     Logger.root.level = Level.ALL;
     Logger.root.onRecord.listen((record) {
-      var body = record.object ?? record.message;
+      final body = record.object ?? record.message;
 
-      var output = {
+      final output = {
         'name': record.loggerName,
         'level': record.level.name,
         'time': record.time.toString(),
@@ -49,7 +49,7 @@ class Server {
       print(json.encode(output));
     });
 
-    var output = Directory('output');
+    final output = Directory('output');
     if (output.existsSync()) {
       output.deleteSync(recursive: true);
     }
@@ -69,9 +69,9 @@ class Server {
       ],
     );
 
-    var service = ServiceHandler();
+    final service = ServiceHandler();
 
-    var handler = const Pipeline()
+    final handler = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(corsHeaders(headers: {
           ACCESS_CONTROL_ALLOW_HEADERS: [
@@ -92,7 +92,7 @@ class Server {
             await ServiceRequest.fromRequest(request),
           ),
         );
-    var server = await shelf_io.serve(
+    final server = await shelf_io.serve(
       handler,
       'localhost',
       JsonClass.parseInt(params['port']) ?? 8080,

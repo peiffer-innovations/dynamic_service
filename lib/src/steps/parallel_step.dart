@@ -14,7 +14,7 @@ class ParallelStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var steps = args['steps'];
+    final steps = args['steps'];
 
     await context.registry.executeDynamicSteps(
       steps,

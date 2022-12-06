@@ -25,9 +25,9 @@ class JwtArgs {
       );
     }
 
-    var key = map['key']?.toString();
-    var keyId = (map['keyId'] ?? map['key-id'] ?? 'key0').toString();
-    var keyType = (map['keyType'] ?? map['key-type'])?.toString();
+    final key = map['key']?.toString();
+    final keyId = (map['keyId'] ?? map['key-id'] ?? 'key0').toString();
+    final keyType = (map['keyType'] ?? map['key-type'])?.toString();
 
     if (key == null || key.isEmpty) {
       throw ServiceException(

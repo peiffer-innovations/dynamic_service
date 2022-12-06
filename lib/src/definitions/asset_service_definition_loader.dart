@@ -17,7 +17,7 @@ class AssetServiceDefinitionLoader extends ServiceDefinitionLoader {
   Future<ServiceDefinition> loadServiceDefinition(
     DynamicServiceRegistry registry,
   ) async {
-    var file = File('$root$path');
+    final file = File('$root$path');
 
     if (!file.existsSync()) {
       throw ServiceException(
@@ -26,9 +26,9 @@ class AssetServiceDefinitionLoader extends ServiceDefinitionLoader {
       );
     }
 
-    var data = file.readAsStringSync();
+    final data = file.readAsStringSync();
 
-    var parsed = DynamicStringParser.parse(data);
+    final parsed = DynamicStringParser.parse(data);
 
     return ServiceDefinition.fromDynamic(parsed, registry: registry);
   }

@@ -15,8 +15,8 @@ class ETagStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var body = context.response.body;
-    var hash = sha256.convert(body).toString();
+    final body = context.response.body;
+    final hash = sha256.convert(body).toString();
 
     context.response.headers['etag'] = hash;
     if (hash == context.request.headers['if-none-match']) {

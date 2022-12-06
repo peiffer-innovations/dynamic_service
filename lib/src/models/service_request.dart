@@ -31,8 +31,8 @@ class ServiceRequest extends JsonClass {
     required this.path,
     required this.query,
   })  : method = method.toUpperCase(),
-        requestId = headers[kHeaderRequestId] ?? Uuid().v4(),
-        sessionId = headers[kHeaderSessionId] ?? Uuid().v4();
+        requestId = headers[kHeaderRequestId] ?? const Uuid().v4(),
+        sessionId = headers[kHeaderSessionId] ?? const Uuid().v4();
 
   static const kHeaderRequestId = 'x-request-id';
   static const kHeaderSessionId = 'x-session-id';
@@ -84,7 +84,7 @@ class ServiceRequest extends JsonClass {
 
     if (result == null) {
       assert(maxBodySize >= -1);
-      var headers = Map<String, String>.from(this.headers);
+      final headers = Map<String, String>.from(this.headers);
 
       for (var h in sensitiveHeaders) {
         headers[h] = '***';
@@ -103,11 +103,11 @@ class ServiceRequest extends JsonClass {
         var body = '';
 
         if (this.body.isNotEmpty) {
-          var bodyStr = bodyAsString;
+          final bodyStr = bodyAsString;
           if (bodyStr.isNotEmpty) {
             body = bodyStr;
             try {
-              var bodyJson = json.decode(bodyStr);
+              final bodyJson = json.decode(bodyStr);
               body = bodyJson;
             } catch (e) {
               // no-op

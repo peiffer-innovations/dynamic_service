@@ -91,7 +91,7 @@ class _ChildMap extends DelegatingMap<String, dynamic> {
 
   @override
   Iterable get values {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
 
     map.addAll(_parent);
     map.addAll(this);
@@ -109,7 +109,7 @@ class _ChildMap extends DelegatingMap<String, dynamic> {
 
   @override
   void forEach(void Function(String key, dynamic value) action) {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
 
     map.addAll(_parent);
     map.addAll(this);
@@ -121,7 +121,7 @@ class _ChildMap extends DelegatingMap<String, dynamic> {
   Map<K2, V2> map<K2, V2>(
     MapEntry<K2, V2> Function(String key, dynamic value) convert,
   ) {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
 
     map.addAll(_parent);
     map.addAll(this);

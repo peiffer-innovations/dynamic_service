@@ -25,7 +25,7 @@ class FileWriter extends Writer {
     required ServiceContext context,
     Map<String, dynamic>? properties,
   }) async {
-    var path = target.substring(target.indexOf('://') + 3);
+    final path = target.substring(target.indexOf('://') + 3);
     if (path.startsWith('/')) {
       throw ServiceException(
         body: 'Invalid path: [$path]; only relative paths are supported',
@@ -36,7 +36,7 @@ class FileWriter extends Writer {
       throw ServiceException(body: 'Invalid path: [$path]');
     }
 
-    var file = File('${this.path}/$path');
+    final file = File('${this.path}/$path');
     if (contents == null) {
       if (file.existsSync()) {
         file.deleteSync();
@@ -45,7 +45,7 @@ class FileWriter extends Writer {
       if (!file.existsSync()) {
         file.createSync(recursive: true);
       }
-      var bytes = contents is String ? utf8.encode(contents) : contents;
+      final bytes = contents is String ? utf8.encode(contents) : contents;
 
       file.writeAsBytesSync(bytes);
     }

@@ -18,11 +18,11 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
     required ServiceRequest request,
   }) async {
     ServiceContext? result;
-    var criteria = entry.criteria;
+    final criteria = entry.criteria;
 
     try {
       var isMatch = true;
-      var variables = <String, dynamic>{};
+      final variables = <String, dynamic>{};
 
       try {
         variables['body'] = json.decode(request.bodyAsString);
@@ -43,22 +43,22 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
 
       var regex = RegExp('^$path\$');
 
-      var reqJson = request.toJson();
-      var template = Template(
+      final reqJson = request.toJson();
+      final template = Template(
         syntax: registry.templateSyntax,
         value: json.encode(reqJson),
       );
-      var req = json.decode(template.process(context: reqJson));
+      final req = json.decode(template.process(context: reqJson));
 
-      var pathMatches = regex.allMatches(request.path);
+      final pathMatches = regex.allMatches(request.path);
 
       if (pathMatches.isNotEmpty) {
-        var pathVars = <String, String>{};
+        final pathVars = <String, String>{};
         pathVars['uri'] = request.path;
         pathMatches.forEach((match) {
-          var names = match.groupNames;
+          final names = match.groupNames;
           for (var name in names) {
-            var value = match.namedGroup(name);
+            final value = match.namedGroup(name);
             if (value != null) {
               pathVars[name] = value;
             }
@@ -81,7 +81,7 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
           criteria.method,
           caseSensitive: false,
         );
-        var matches = regex.hasMatch(request.method);
+        final matches = regex.hasMatch(request.method);
 
         if (matches) {
           variables['method'] = request.method;
@@ -96,17 +96,17 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
         }
       }
 
-      var evaluate = (test, {canonicalize = false}) {
+      final evaluate = (test, {canonicalize = false}) {
         var conditionMatch = true;
 
         if (test != null) {
           if (test is Iterable) {
             for (var e in test) {
-              var input = Template(
+              final input = Template(
                 syntax: registry.templateSyntax,
                 value: e,
               ).process(context: variables);
-              var result = JsonClass.parseBool(input);
+              final result = JsonClass.parseBool(input);
 
               if (!result) {
                 _logger.finest({
@@ -124,11 +124,11 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
               test = CanonicalizedMap.from(test, (key) => key.toLowerCase());
             }
             for (var e in test.entries) {
-              var input = Template(
+              final input = Template(
                 syntax: registry.templateSyntax,
                 value: e.key,
               ).process(context: variables);
-              var result = RegExp(e.value).hasMatch(input);
+              final result = RegExp(e.value).hasMatch(input);
 
               if (!result) {
                 _logger.finest({
@@ -142,11 +142,11 @@ class DefaultCriteriaEvaluator extends CriteriaEvaluator {
               }
             }
           } else if (test is String) {
-            var input = Template(
+            final input = Template(
               syntax: registry.templateSyntax,
               value: test,
             ).process(context: variables);
-            var result = JsonClass.parseBool(input);
+            final result = JsonClass.parseBool(input);
 
             conditionMatch = result;
             if (!conditionMatch) {

@@ -12,7 +12,7 @@ Future<void> main() async {
   const kPort = '8081';
 
   group('server', () {
-    var client = Client();
+    final client = Client();
     late Process process;
 
     setUpAll(() async {
@@ -26,13 +26,13 @@ Future<void> main() async {
 
       var connected = false;
 
-      var maxAttempts = 20;
+      final maxAttempts = 20;
       for (var i = 1; i <= maxAttempts; i++) {
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
 
         print('Waiting for server to start up: [$i/$maxAttempts]...');
         try {
-          var res = await client.execute(
+          final res = await client.execute(
             request: Request(
               url: 'http://localhost:$kPort/health-check',
             ),
@@ -62,15 +62,15 @@ Future<void> main() async {
 
     group('root', () {
       test('health-check', () async {
-        var req = Request(url: 'http://localhost:$kPort/health-check');
-        var res = await client.execute(request: req);
+        final req = Request(url: 'http://localhost:$kPort/health-check');
+        final res = await client.execute(request: req);
 
         expect(res.statusCode, 204);
       });
 
       test('hello', () async {
-        var req = Request(url: 'http://localhost:$kPort/hello');
-        var res = await client.execute(request: req);
+        final req = Request(url: 'http://localhost:$kPort/hello');
+        final res = await client.execute(request: req);
 
         expect(res.body, 'Hello World!');
         expect(res.headers['content-type'], 'text/plain');
@@ -78,8 +78,8 @@ Future<void> main() async {
       });
 
       test('goodbye', () async {
-        var req = Request(url: 'http://localhost:$kPort/goodbye');
-        var res = await client.execute(request: req);
+        final req = Request(url: 'http://localhost:$kPort/goodbye');
+        final res = await client.execute(request: req);
 
         expect(res.body, 'Goodbye Cruel World!!!');
         expect(res.headers['content-type'], 'text/plain');
@@ -87,11 +87,11 @@ Future<void> main() async {
       });
 
       test('timestamp', () async {
-        var req = Request(url: 'http://localhost:$kPort/now');
-        var now = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(request: req);
+        final req = Request(url: 'http://localhost:$kPort/now');
+        final now = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(request: req);
 
-        var utc = DateTime.parse(res.body['utc']);
+        final utc = DateTime.parse(res.body['utc']);
         expect(utc.isUtc, true);
         expect(
             (utc.millisecondsSinceEpoch - now).abs(), lessThanOrEqualTo(1000));
@@ -107,11 +107,11 @@ Future<void> main() async {
           'http://localhost:$kPort/generate-name/local',
         ];
         for (var url in endpoints) {
-          var req = Request(url: url);
+          final req = Request(url: url);
           var res = await client.execute(request: req);
 
-          var firstName = res.body['firstName'];
-          var lastName = res.body['lastName'];
+          final firstName = res.body['firstName'];
+          final lastName = res.body['lastName'];
 
           expect(res.headers['content-type'], 'application/json');
           expect(res.statusCode, 200);
@@ -141,8 +141,8 @@ Future<void> main() async {
       });
 
       test('weather', () async {
-        var req = Request(url: 'http://localhost:$kPort/weather');
-        var res = await client.execute(
+        final req = Request(url: 'http://localhost:$kPort/weather');
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -152,8 +152,8 @@ Future<void> main() async {
       });
 
       test('mountain', () async {
-        var req = Request(url: 'http://localhost:$kPort/mountain');
-        var res = await client.execute(
+        final req = Request(url: 'http://localhost:$kPort/mountain');
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -163,8 +163,8 @@ Future<void> main() async {
       });
 
       test('mountain_network', () async {
-        var req = Request(url: 'http://localhost:$kPort/mountain/network');
-        var res = await client.execute(
+        final req = Request(url: 'http://localhost:$kPort/mountain/network');
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -174,14 +174,14 @@ Future<void> main() async {
       });
 
       test('parallel', () async {
-        var req = Request(url: 'http://localhost:$kPort/parallel');
-        var start = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(
+        final req = Request(url: 'http://localhost:$kPort/parallel');
+        final start = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(
           request: req,
         );
 
-        var end = DateTime.now().millisecondsSinceEpoch;
-        var delta = end - start;
+        final end = DateTime.now().millisecondsSinceEpoch;
+        final delta = end - start;
 
         expect(delta, lessThan(2000));
         expect(delta, greaterThan(500));
@@ -194,84 +194,84 @@ Future<void> main() async {
 
     group('for_each', () {
       test('for_each_array', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/for-each/array',
         );
 
-        var startTime = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(
+        final startTime = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
-        var endTime = DateTime.now().millisecondsSinceEpoch;
+        final endTime = DateTime.now().millisecondsSinceEpoch;
 
         expect(res.statusCode, 200);
 
-        var total = endTime - startTime;
+        final total = endTime - startTime;
         expect(total, lessThan(4000));
         expect(total, greaterThan(990));
         expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_array_parallel', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/for-each/array/parallel',
         );
 
-        var startTime = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(
+        final startTime = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
-        var endTime = DateTime.now().millisecondsSinceEpoch;
+        final endTime = DateTime.now().millisecondsSinceEpoch;
 
         expect(res.statusCode, 200);
 
-        var total = endTime - startTime;
+        final total = endTime - startTime;
         expect(total, lessThan(1000));
         expect(total, greaterThan(90));
         expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_map', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/for-each/map',
         );
 
-        var startTime = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(
+        final startTime = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
-        var endTime = DateTime.now().millisecondsSinceEpoch;
+        final endTime = DateTime.now().millisecondsSinceEpoch;
 
         expect(res.statusCode, 200);
 
-        var total = endTime - startTime;
+        final total = endTime - startTime;
         expect(total, lessThan(4000));
         expect(total, greaterThan(990));
         expect(res.body.isNotEmpty, true);
       });
 
       test('for_each_map_parallel', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/for-each/map/parallel',
         );
 
-        var startTime = DateTime.now().millisecondsSinceEpoch;
-        var res = await client.execute(
+        final startTime = DateTime.now().millisecondsSinceEpoch;
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
-        var endTime = DateTime.now().millisecondsSinceEpoch;
+        final endTime = DateTime.now().millisecondsSinceEpoch;
 
         expect(res.statusCode, 200);
 
-        var total = endTime - startTime;
+        final total = endTime - startTime;
         expect(total, lessThan(1000));
         expect(total, greaterThan(90));
         expect(res.body.isNotEmpty, true);
@@ -280,10 +280,10 @@ Future<void> main() async {
 
     group('greetings', () {
       test('get_greeting_regex', () async {
-        var req = Request(
+        final req = Request(
           url: 'http://localhost:$kPort/greeting/regex/Jane/Doe',
         );
-        var res = await client.execute(request: req);
+        final res = await client.execute(request: req);
 
         expect(res.body, 'Hi Jane Doe');
         expect(res.headers['content-type'], 'text/plain');
@@ -291,10 +291,10 @@ Future<void> main() async {
       });
 
       test('get_greeting_simple', () async {
-        var req = Request(
+        final req = Request(
           url: 'http://localhost:$kPort/greeting/simple/John/Doe',
         );
-        var res = await client.execute(request: req);
+        final res = await client.execute(request: req);
 
         expect(res.body, 'Hello John Doe');
         expect(res.headers['content-type'], 'text/plain');
@@ -302,7 +302,7 @@ Future<void> main() async {
       });
 
       test('post_greeting_list', () async {
-        var req = Request(
+        final req = Request(
           body: json.encode({
             'name': {
               'first': 'George',
@@ -312,7 +312,7 @@ Future<void> main() async {
           method: RequestMethod.post,
           url: 'http://localhost:$kPort/greeting/list',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -323,7 +323,7 @@ Future<void> main() async {
       });
 
       test('negative: post_greeting_list', () async {
-        var req = Request(
+        final req = Request(
           body: json.encode({
             'name': {
               'first': 'George',
@@ -345,7 +345,7 @@ Future<void> main() async {
       });
 
       test('post_greeting_map', () async {
-        var req = Request(
+        final req = Request(
           body: json.encode({
             'name': {
               'first': 'Thomas',
@@ -355,7 +355,7 @@ Future<void> main() async {
           method: RequestMethod.post,
           url: 'http://localhost:$kPort/greeting/string',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -366,7 +366,7 @@ Future<void> main() async {
       });
 
       test('negative: post_greeting_map', () async {
-        var req = Request(
+        final req = Request(
           body: json.encode({
             'name': {
               'first': 'Thomas',
@@ -389,7 +389,7 @@ Future<void> main() async {
       });
 
       test('post_greeting_string', () async {
-        var req = Request(
+        final req = Request(
           body: json.encode({
             'name': {
               'first': 'Thomas',
@@ -399,7 +399,7 @@ Future<void> main() async {
           method: RequestMethod.post,
           url: 'http://localhost:$kPort/greeting/string',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
@@ -412,18 +412,18 @@ Future<void> main() async {
 
     group('users', () {
       test('user_inline_jane', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/user/inline/jane',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
 
-        var greeting = 'Nice to meet you';
-        var firstName = 'Jane';
-        var lastName = 'Smith';
+        final greeting = 'Nice to meet you';
+        final firstName = 'Jane';
+        final lastName = 'Smith';
 
         expect(res.body, '''
 $greeting $firstName $lastName
@@ -434,18 +434,18 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
       });
 
       test('user_inline_john', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/user/inline/john',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
           jsonResponse: false,
         );
 
-        var greeting = 'Bonjour';
-        var firstName = 'John';
-        var lastName = 'Smith';
+        final greeting = 'Bonjour';
+        final firstName = 'John';
+        final lastName = 'Smith';
 
         expect(res.body, '''
 $greeting $firstName $lastName
@@ -456,17 +456,17 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
       });
 
       test('user_body_jane', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/user/jane',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
         );
 
-        var greeting = 'Nice to meet you';
-        var firstName = 'Jane';
-        var lastName = 'Smith';
+        final greeting = 'Nice to meet you';
+        final firstName = 'Jane';
+        final lastName = 'Smith';
 
         expect(res.body, {
           'standard': {
@@ -493,17 +493,17 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
       });
 
       test('user_body_john', () async {
-        var req = Request(
+        final req = Request(
           method: RequestMethod.get,
           url: 'http://localhost:$kPort/user/john',
         );
-        var res = await client.execute(
+        final res = await client.execute(
           request: req,
         );
 
-        var greeting = 'Bonjour';
-        var firstName = 'John';
-        var lastName = 'Smith';
+        final greeting = 'Bonjour';
+        final firstName = 'John';
+        final lastName = 'Smith';
 
         expect(res.body, {
           'standard': {
@@ -530,9 +530,9 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
       });
 
       test('user', () async {
-        var greeting = 'New User:';
-        var firstName = 'Test';
-        var lastName = 'User';
+        final greeting = 'New User:';
+        final firstName = 'Test';
+        final lastName = 'User';
 
         var req = Request(
           method: RequestMethod.get,
@@ -635,13 +635,13 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
 
         var res = await client.execute(request: req);
 
-        var decoded = res.body;
+        final decoded = res.body;
 
-        var accessToken = decoded['accessToken'];
-        var refreshToken = decoded['refreshToken'];
+        final accessToken = decoded['accessToken'];
+        final refreshToken = decoded['refreshToken'];
 
-        var accessJwt = JsonWebToken.unverified(accessToken);
-        var refreshJwt = JsonWebToken.unverified(refreshToken);
+        final accessJwt = JsonWebToken.unverified(accessToken);
+        final refreshJwt = JsonWebToken.unverified(refreshToken);
 
         expect(
           DateTime.fromMillisecondsSinceEpoch(
@@ -687,7 +687,7 @@ ${greeting.toLowerCase()} ${firstName.toLowerCase()} ${lastName.toLowerCase()}''
           fail('Expected exception');
         } catch (e) {
           if (e is RestException) {
-            var res = e.response;
+            final res = e.response;
             expect(res.body, 'Not a valid refresh token');
           }
         }

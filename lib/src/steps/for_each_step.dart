@@ -17,32 +17,32 @@ class ForEachStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var parallel = JsonClass.parseBool(
+    final parallel = JsonClass.parseBool(
       args[StandardVariableNames.kNameParallel],
     );
-    var variableName = args[StandardVariableNames.kNameVariable] ??
+    final variableName = args[StandardVariableNames.kNameVariable] ??
         StandardVariableNames.kNameVariable;
-    var indexName = args[StandardVariableNames.kNameIndex] ??
+    final indexName = args[StandardVariableNames.kNameIndex] ??
         StandardVariableNames.kNameIndex;
 
     var input = args[StandardVariableNames.kNameInput];
 
-    var ref = args['\$ref'];
+    final ref = args['\$ref'];
     if (ref != null) {
       input = context.registry.loadRef(ref, context: context);
     }
 
-    var result = json.decode(process(context, input)!);
+    final result = json.decode(process(context, input)!);
 
-    var futures = <Future>[];
-    var steps = args['steps'];
+    final futures = <Future>[];
+    final steps = args['steps'];
 
     if (result is Map) {
       for (var entry in result.entries) {
-        var chContext = ChildServiceContext(parent: context);
+        final chContext = ChildServiceContext(parent: context);
         chContext.variables[indexName] = entry.key;
         chContext.variables[variableName] = entry.value;
-        var future = chContext.registry.executeDynamicSteps(
+        final future = chContext.registry.executeDynamicSteps(
           steps,
           context: chContext,
         );
@@ -60,10 +60,10 @@ class ForEachStep extends ServiceStep {
     } else if (result is Iterable) {
       var index = 0;
       for (var entry in result) {
-        var chContext = ChildServiceContext(parent: context);
+        final chContext = ChildServiceContext(parent: context);
         chContext.variables[indexName] = index;
         chContext.variables[variableName] = entry;
-        var future = chContext.registry.executeDynamicSteps(
+        final future = chContext.registry.executeDynamicSteps(
           steps,
           context: chContext,
         );

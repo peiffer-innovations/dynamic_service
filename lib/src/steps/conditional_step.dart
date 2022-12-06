@@ -18,17 +18,17 @@ class ConditionalStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var whenFalse = args['steps-false'];
-    var whenTrue = args['steps-true'];
+    final whenFalse = args['steps-false'];
+    final whenTrue = args['steps-true'];
 
-    var condition = args['condition']?.toString();
+    final condition = args['condition']?.toString();
 
-    var processed = process(context, condition);
-    var result = JsonClass.parseBool(processed);
+    final processed = process(context, condition);
+    final result = JsonClass.parseBool(processed);
 
     _logger.finer('[result]: [$result]');
 
-    var steps = result ? whenTrue : whenFalse;
+    final steps = result ? whenTrue : whenFalse;
 
     if (steps != null) {
       await context.registry.executeDynamicSteps(steps, context: context);

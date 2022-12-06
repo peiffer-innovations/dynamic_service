@@ -20,13 +20,13 @@ abstract class ServiceDefinitionLoader {
       try {
         dynamic result;
 
-        var startTime = DateTime.now().millisecondsSinceEpoch;
+        final startTime = DateTime.now().millisecondsSinceEpoch;
         try {
           result = await loadServiceDefinition(registry);
         } catch (_) {
           rethrow;
         } finally {
-          var duration =
+          final duration =
               (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
           _logger.fine(
             '[${runtimeType.toString()}]: loaded service definition in [${duration}s]',

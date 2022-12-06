@@ -73,10 +73,10 @@ class StepLoader {
     dynamic steps, {
     required DynamicServiceRegistry registry,
   }) async {
-    var result = <ServiceStep>[];
+    final result = <ServiceStep>[];
 
     if (steps is Map) {
-      var ref = steps[r'$ref'];
+      final ref = steps[r'$ref'];
       if (ref == null) {
         result.add(ServiceStep.fromDynamic(steps, registry: registry));
       } else {

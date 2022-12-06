@@ -21,13 +21,13 @@ class WriteStep extends ServiceStep {
     Map<String, dynamic> args,
   ) async {
     var contents = args['contents'];
-    var path = Template(
+    final path = Template(
       syntax: context.registry.templateSyntax,
       value: args['path'],
     ).process(context: context.variables);
 
-    var format = JsonClass.parseBool(args['format']);
-    var ref = args['\$ref'];
+    final format = JsonClass.parseBool(args['format']);
+    final ref = args['\$ref'];
 
     if (ref != null) {
       contents = await context.registry.loadRef(ref, context: context);
@@ -36,7 +36,7 @@ class WriteStep extends ServiceStep {
     if (contents is Map || contents is List) {
       try {
         contents = format == true
-            ? JsonEncoder.withIndent('  ').convert(contents)
+            ? const JsonEncoder.withIndent('  ').convert(contents)
             : json.encode(contents);
       } catch (e, stack) {
         _logger.fine({

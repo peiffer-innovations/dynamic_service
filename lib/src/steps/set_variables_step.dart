@@ -19,7 +19,7 @@ class SetVariablesStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var ref = args[r'$ref'];
+    final ref = args[r'$ref'];
 
     if (ref == null) {
       context.variables.addAll(
@@ -31,7 +31,7 @@ class SetVariablesStep extends ServiceStep {
         ),
       );
     } else {
-      var variable = args[StandardVariableNames.kNameVariable] ?? kType;
+      final variable = args[StandardVariableNames.kNameVariable] ?? kType;
       var data = await context.registry.loadRef(ref, context: context);
       var jsonEncoded = false;
       try {

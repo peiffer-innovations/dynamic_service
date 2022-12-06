@@ -23,17 +23,17 @@ class LoadNetworkStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var async = JsonClass.parseBool(args['async']);
+    final async = JsonClass.parseBool(args['async']);
 
-    var argReqs = args['requests'] ?? [args['request']];
-    var requests = <NetworkRequest>[];
+    final argReqs = args['requests'] ?? [args['request']];
+    final requests = <NetworkRequest>[];
     var index = 0;
     for (var arg in argReqs) {
       if (arg == null) {
         throw ServiceException(body: '[$kType]: no request or requests set');
       }
 
-      var processed = process(context, arg);
+      final processed = process(context, arg);
 
       if (processed == null || processed.isEmpty) {
         throw ServiceException(
@@ -49,25 +49,25 @@ class LoadNetworkStep extends ServiceStep {
       );
     }
 
-    var variableName = args[StandardVariableNames.kNameVariable] ?? kType;
-    var results = <String, dynamic>{};
+    final variableName = args[StandardVariableNames.kNameVariable] ?? kType;
+    final results = <String, dynamic>{};
 
-    var futures = <Future>[];
+    final futures = <Future>[];
     for (var request in requests) {
-      var rcReq = rc.Request(
+      final rcReq = rc.Request(
         body: request.body,
         headers: request.headers,
         method: rc.RequestMethod.lookup(request.method),
         url: request.url,
       );
 
-      var future = () async {
+      final future = () async {
         if (request.delay.inMilliseconds > 0) {
           await Future.delayed(request.delay);
         }
-        var startTime = DateTime.now().millisecondsSinceEpoch;
+        final startTime = DateTime.now().millisecondsSinceEpoch;
         try {
-          var response = await rc.Client().execute(
+          final response = await rc.Client().execute(
             request: rcReq,
             jsonResponse: request.processBody,
           );
@@ -78,7 +78,7 @@ class LoadNetworkStep extends ServiceStep {
                 : response.body;
 
             if (body is String) {
-              var template = Template(
+              final template = Template(
                 syntax: context.registry.templateSyntax,
                 value: body,
               );
@@ -97,8 +97,8 @@ class LoadNetworkStep extends ServiceStep {
             stack,
           );
         } finally {
-          var endTime = DateTime.now().millisecondsSinceEpoch;
-          var duration = (endTime - startTime) / 1000.0;
+          final endTime = DateTime.now().millisecondsSinceEpoch;
+          final duration = (endTime - startTime) / 1000.0;
           _logger.fine({
             'message':
                 '[$kType]: loaded url: [${request.url}] in [${duration}s]',

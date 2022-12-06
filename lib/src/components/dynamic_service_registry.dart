@@ -13,8 +13,10 @@ class DynamicServiceRegistry {
     required this.serviceDefinitionLoader,
     List<ExpressionSyntax>? templateSyntax,
     List<Writer>? writers,
-  })  : templateSyntax =
-            List.unmodifiable(templateSyntax ?? [StandardExpressionSyntax()]),
+  })  : templateSyntax = List.unmodifiable(templateSyntax ??
+            [
+              const StandardExpressionSyntax(),
+            ]),
         _refLoaders = refLoaders ?? [FileRefLoader()],
         _writers = writers ?? const [] {
     evaluators?.forEach((key, value) => _evaluators[key] = value);
@@ -57,12 +59,12 @@ class DynamicServiceRegistry {
     required ServiceContext context,
     bool parallel = false,
   }) async {
-    var loader = StepLoader(steps);
-    var loaded = await loader.load(registry: context.registry);
+    final loader = StepLoader(steps);
+    final loaded = await loader.load(registry: context.registry);
 
-    var futures = <Future>[];
+    final futures = <Future>[];
     for (var s in loaded) {
-      var future = s.execute(context);
+      final future = s.execute(context);
 
       if (parallel) {
         futures.add(future);
@@ -77,7 +79,7 @@ class DynamicServiceRegistry {
   }
 
   CriteriaEvaluator getEvaluator(String? type) {
-    var result = _evaluators[type];
+    final result = _evaluators[type];
     if (result == null) {
       throw Exception(
         '[DynamicServiceRegistry]: unknown evaluator type: [$type].',
@@ -91,7 +93,7 @@ class DynamicServiceRegistry {
     required String type,
   }) {
     ServiceStep result;
-    var builder = _steps[type];
+    final builder = _steps[type];
 
     if (builder == null) {
       throw Exception('[DynamicServiceRegistry]: unknown step type: [$type]');
@@ -121,13 +123,13 @@ class DynamicServiceRegistry {
         'sessionId': context?.request.sessionId ?? '<internal>',
         'requestId': context?.request.requestId ?? '<internal>',
       });
-      RefLoader? refLoader = _refLoaders.firstWhere(
+      final refLoader = _refLoaders.firstWhere(
         (loader) => loader.canLoad(ref),
       );
 
-      var startTime = DateTime.now().millisecondsSinceEpoch;
-      var result = await refLoader.load(ref, registry: this);
-      var duration =
+      final startTime = DateTime.now().millisecondsSinceEpoch;
+      final result = await refLoader.load(ref, registry: this);
+      final duration =
           (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
       _logger.fine({
         'message': '[loadRef]: loaded ref: [$ref] in [${duration}s]',
@@ -178,18 +180,18 @@ class DynamicServiceRegistry {
         'sessionId': context.request.sessionId,
         'requestId': context.request.requestId,
       });
-      Writer? writer = _writers.firstWhere(
+      final writer = _writers.firstWhere(
         (loader) => loader.canWrite(target),
       );
 
-      var startTime = DateTime.now().millisecondsSinceEpoch;
+      final startTime = DateTime.now().millisecondsSinceEpoch;
       await writer.write(
         target,
         contents,
         context: context,
         properties: properties,
       );
-      var duration =
+      final duration =
           (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
       _logger.fine({
         'message': '[write]: wrote: [$target] in [${duration}s]',

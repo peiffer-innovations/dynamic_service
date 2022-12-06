@@ -17,7 +17,7 @@ class ValidateSchemaStep extends ServiceStep {
     Map<String, dynamic> args,
   ) async {
     var schema = args['schema'];
-    var content = process(context, args['content']);
+    final content = process(context, args['content']);
 
     if (schema is String) {
       schema = yaon.parse(schema);
@@ -37,7 +37,7 @@ class ValidateSchemaStep extends ServiceStep {
       );
     }
 
-    var errors = JsonSchema.createSchema(schema).validateWithErrors(
+    final errors = JsonSchema.createSchema(schema).validateWithErrors(
       yaon.parse(content),
     );
     if (errors.isNotEmpty == true) {

@@ -15,23 +15,24 @@ class ServiceHandler {
   final DynamicServiceRegistry _registry;
 
   FutureOr<Response> handle(ServiceRequest request) async {
-    var startTime = DateTime.now().millisecondsSinceEpoch;
+    final startTime = DateTime.now().millisecondsSinceEpoch;
     Response? response;
 
     ServiceContext? context;
     ServiceResponse? onError;
 
     try {
-      var definition = await _registry.serviceDefinitionLoader.load(_registry);
+      final definition =
+          await _registry.serviceDefinitionLoader.load(_registry);
 
-      var evaluatorStartTime = DateTime.now().millisecondsSinceEpoch;
+      final evaluatorStartTime = DateTime.now().millisecondsSinceEpoch;
       for (var entry in definition.entries) {
         // Reset the handler each time to guarantee one can never leak across
         // entries.
         onError = null;
 
         try {
-          var evaluator = _registry.getEvaluator(entry.evaluator);
+          final evaluator = _registry.getEvaluator(entry.evaluator);
 
           context = await evaluator.evaluate(
             entry: entry,
@@ -41,7 +42,7 @@ class ServiceHandler {
 
           if (context != null) {
             onError = entry.onError;
-            var duration =
+            final duration =
                 (DateTime.now().millisecondsSinceEpoch - evaluatorStartTime) /
                     1000.0;
             _logger.fine({
@@ -50,9 +51,9 @@ class ServiceHandler {
               'sessionId': request.sessionId,
               'requestId': request.requestId,
             });
-            var steps = await entry.stepLoader.load(registry: _registry);
+            final steps = await entry.stepLoader.load(registry: _registry);
             for (var step in steps) {
-              var startTime = DateTime.now().millisecondsSinceEpoch;
+              final startTime = DateTime.now().millisecondsSinceEpoch;
               try {
                 await step.execute(context);
               } catch (e, stack) {
@@ -65,7 +66,7 @@ class ServiceHandler {
                   stack: stack,
                 );
               } finally {
-                var duration =
+                final duration =
                     (DateTime.now().millisecondsSinceEpoch - startTime) /
                         1000.0;
 
@@ -100,8 +101,8 @@ class ServiceHandler {
         var body = onError.body;
 
         try {
-          var encoded = utf8.decode(body);
-          var template = Template(
+          final encoded = utf8.decode(body);
+          final template = Template(
             syntax: _registry.templateSyntax,
             value: encoded,
           );
@@ -139,7 +140,7 @@ class ServiceHandler {
         }
       }
     } finally {
-      var duration =
+      final duration =
           (DateTime.now().millisecondsSinceEpoch - startTime) / 1000.0;
       _logger.fine({
         'message': '[complete]: request completed in [${duration}s]',

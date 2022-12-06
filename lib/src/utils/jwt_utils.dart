@@ -6,9 +6,9 @@ import 'package:x509/x509.dart';
 
 class JwtUtils {
   static String create(JwtArgs args) {
-    var builder = JsonWebSignatureBuilder();
+    final builder = JsonWebSignatureBuilder();
 
-    var claims = _buildClaims(
+    final claims = _buildClaims(
       claims: args.claims,
       expires: args.expires,
     );
@@ -44,7 +44,7 @@ class JwtUtils {
     String token, {
     required String key,
   }) async {
-    var parts = token.split('.');
+    final parts = token.split('.');
 
     if (parts.length != 3) {
       throw ServiceException(
@@ -53,8 +53,9 @@ class JwtUtils {
       );
     }
 
-    var header = json.decode(utf8.decode(_decodeBase64EncodedBytes(parts[0])));
-    var jwt = JsonWebToken.unverified(token);
+    final header =
+        json.decode(utf8.decode(_decodeBase64EncodedBytes(parts[0])));
+    final jwt = JsonWebToken.unverified(token);
 
     if ((jwt.claims.expiry?.millisecondsSinceEpoch ?? 0) <
         DateTime.now().millisecondsSinceEpoch) {
@@ -65,8 +66,8 @@ class JwtUtils {
     }
 
     JsonWebKey jwk;
-    var alg = header['alg'];
-    var keyId = header['kid'];
+    final alg = header['alg'];
+    final keyId = header['kid'];
 
     switch (alg) {
       case 'HS256':
@@ -78,7 +79,7 @@ class JwtUtils {
         break;
 
       case 'RS256':
-        var pk = parsePem(key).first;
+        final pk = parsePem(key).first;
         jwk = JsonWebKey.rsa(
           exponent: pk.exponent,
           keyId: keyId,
@@ -93,8 +94,8 @@ class JwtUtils {
         );
     }
 
-    var keyStore = JsonWebKeyStore()..addKey(jwk);
-    var verified = await jwt.verify(keyStore);
+    final keyStore = JsonWebKeyStore()..addKey(jwk);
+    final verified = await jwt.verify(keyStore);
 
     if (verified != true) {
       throw ServiceException(
@@ -110,7 +111,7 @@ class JwtUtils {
     required Map<String, dynamic> claims,
     required Duration expires,
   }) {
-    var tokenJson = {
+    final tokenJson = {
       ...claims,
       'exp': Duration(
         milliseconds:

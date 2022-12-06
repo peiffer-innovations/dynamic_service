@@ -27,7 +27,7 @@ class ServiceDefinition {
     dynamic map, {
     required DynamicServiceRegistry registry,
   }) async {
-    var results = <ServiceEntry>[];
+    final results = <ServiceEntry>[];
 
     var entries = map['services'];
     if (entries is List) {
@@ -35,7 +35,7 @@ class ServiceDefinition {
     }
     if (entries is Map) {
       for (var entry in entries.entries) {
-        var ref = entry.value[r'$ref'];
+        final ref = entry.value[r'$ref'];
         if (ref == null) {
           results.add(
             await ServiceEntry.fromDynamic(
@@ -45,7 +45,7 @@ class ServiceDefinition {
             ),
           );
         } else {
-          var data = await registry.loadRef(ref);
+          final data = await registry.loadRef(ref);
           results.addAll(await _loadEntries(data, registry: registry));
         }
       }

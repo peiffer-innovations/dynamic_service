@@ -20,10 +20,10 @@ class NetworkRefLoader extends RegExpRefLoader {
     String ref, {
     required DynamicServiceRegistry registry,
   }) async {
-    var request = Request(url: ref);
+    final request = Request(url: ref);
 
     try {
-      var response = await _client.execute(
+      final response = await _client.execute(
         authorizer: _authorizer,
         jsonResponse: false,
         request: request,

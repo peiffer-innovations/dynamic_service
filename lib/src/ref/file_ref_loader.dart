@@ -22,7 +22,7 @@ class FileRefLoader extends RefLoader {
       throw ServiceException(body: 'Invalid ref: [$ref]');
     }
 
-    var file = File('$protocol/${ref.substring(ref.indexOf('://') + 3)}');
+    final file = File('$protocol/${ref.substring(ref.indexOf('://') + 3)}');
 
     if (!file.existsSync()) {
       throw ServiceException(

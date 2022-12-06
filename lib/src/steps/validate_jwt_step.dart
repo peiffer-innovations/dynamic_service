@@ -14,7 +14,7 @@ class ValidateJwtStep extends ServiceStep {
     ServiceContext context,
     Map<String, dynamic> args,
   ) async {
-    var key = process(context, args['key']);
+    final key = process(context, args['key']);
 
     if (key == null) {
       throw ServiceException(
@@ -23,7 +23,7 @@ class ValidateJwtStep extends ServiceStep {
       );
     }
 
-    var token = process(context, args[StandardVariableNames.kNameToken]);
+    final token = process(context, args[StandardVariableNames.kNameToken]);
     if (token == null) {
       throw ServiceException(
         code: 403,
@@ -31,7 +31,7 @@ class ValidateJwtStep extends ServiceStep {
       );
     }
 
-    var jwt = await JwtUtils.validate(token, key: key);
+    final jwt = await JwtUtils.validate(token, key: key);
 
     context.variables[
         process(context, args[StandardVariableNames.kNameVariable]) ??

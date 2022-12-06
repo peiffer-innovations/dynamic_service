@@ -41,23 +41,23 @@ class ServiceResponse extends JsonClass {
       'x-authorization',
     },
   }) {
-    var headers = Map<String, String>.from(this.headers);
+    final headers = Map<String, String>.from(this.headers);
 
     for (var h in sensitiveHeaders) {
       headers[h] = '***';
     }
     headers['content-type'] = contentType;
-    var result = {
+    final result = {
       'headers': headers,
       'status': status,
     };
 
     if (body.isNotEmpty) {
       try {
-        var bodyStr = utf8.decode(body);
+        final bodyStr = utf8.decode(body);
         result['body'] = bodyStr;
         try {
-          var bodyJson = json.decode(bodyStr);
+          final bodyJson = json.decode(bodyStr);
           result['body'] = bodyJson;
         } catch (e) {
           // no-op

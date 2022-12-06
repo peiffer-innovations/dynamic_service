@@ -8,12 +8,12 @@ void main() {
   test('hmac', () {});
 
   test('rsa', () async {
-    var publicKey =
+    final publicKey =
         File('example/server/assets/keys/publicKey.pem').readAsStringSync();
-    var privateKey =
+    final privateKey =
         File('example/server/assets/keys/privateKey.pem').readAsStringSync();
 
-    var token = JwtUtils.create(JwtArgs(
+    final token = JwtUtils.create(JwtArgs(
       claims: {'sub': 'test_user'},
       expires: const Duration(minutes: 10),
       key: privateKey,
@@ -21,7 +21,7 @@ void main() {
       keyId: 'rsa',
     ));
 
-    var jwt = JsonWebToken.unverified(token);
+    final jwt = JsonWebToken.unverified(token);
     expect(jwt.claims.subject, 'test_user');
 
     await JwtUtils.validate(token, key: publicKey);

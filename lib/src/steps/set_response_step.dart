@@ -25,9 +25,9 @@ class SetResponseStep extends ServiceStep {
     var body = args['body'];
     var contentType = context.response.contentType;
 
-    var ref = args[r'$ref'];
+    final ref = args[r'$ref'];
     if (ref == null) {
-      var file = args['file'];
+      final file = args['file'];
       if (file != null) {
         contentType = lookupMimeType(file) ?? contentType;
         body = File(file).readAsBytesSync().toList();

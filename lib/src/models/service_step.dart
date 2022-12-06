@@ -24,7 +24,7 @@ abstract class ServiceStep extends JsonClass {
       throw Exception('[ServiceStep]: map is null');
     }
 
-    var type = map['type'];
+    final type = map['type'];
     if (type == null) {
       throw Exception('[ServiceStep]: type is null\n$map');
     }

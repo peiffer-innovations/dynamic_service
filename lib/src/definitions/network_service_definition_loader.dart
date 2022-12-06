@@ -30,14 +30,14 @@ class NetworkServiceDefinitionLoader extends ServiceDefinitionLoader {
   Future<ServiceDefinition> loadServiceDefinition(
     DynamicServiceRegistry registry,
   ) async {
-    var now = DateTime.now().millisecondsSinceEpoch;
-    var loaded = _updated.millisecondsSinceEpoch;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final loaded = _updated.millisecondsSinceEpoch;
 
     var definition = _serviceDefinition;
 
     if (definition == null || now - ttl.inMilliseconds < loaded) {
       try {
-        var response = await _client.execute(
+        final response = await _client.execute(
           authorizer: _authorizer,
           jsonResponse: false,
           request: Request(
@@ -50,7 +50,7 @@ class NetworkServiceDefinitionLoader extends ServiceDefinitionLoader {
 
         if (response.statusCode == 200) {
           _etag = response.headers['etag'];
-          var body = DynamicStringParser.parse(utf8.decode(response.body));
+          final body = DynamicStringParser.parse(utf8.decode(response.body));
           definition = await ServiceDefinition.fromDynamic(
             body,
             registry: registry,
