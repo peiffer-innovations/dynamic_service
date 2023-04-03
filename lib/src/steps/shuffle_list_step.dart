@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_class/json_class.dart';
-import 'package:yaon/yaon.dart' as yaon;
+import 'package:yaon/yaon.dart';
 
 class ShuffleListStep extends ServiceStep {
   ShuffleListStep({

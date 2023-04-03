@@ -1,6 +1,6 @@
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:logging/logging.dart';
-import 'package:yaon/yaon.dart' as yaon;
+import 'package:yaon/yaon.dart';
 
 /// Dynamic string parser that can process either YAML or JSON.
 class DynamicStringParser {

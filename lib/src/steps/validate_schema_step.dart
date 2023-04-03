@@ -1,6 +1,6 @@
 import 'package:dynamic_service/dynamic_service.dart';
 import 'package:json_schema2/json_schema2.dart';
-import 'package:yaon/yaon.dart' as yaon;
+import 'package:yaon/yaon.dart';
 
 class ValidateSchemaStep extends ServiceStep {
   ValidateSchemaStep({
