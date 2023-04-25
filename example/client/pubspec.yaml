@@ -1,7 +1,7 @@
 name: 'client'
 description: 'A new Flutter project.'
 publish_to: 'none'
-version: '1.0.0+19'
+version: '1.0.0+20'
 
 environment: 
   sdk: '>=2.19.0 <4.0.0'
@@ -10,7 +10,7 @@ dependencies:
   flutter: 
     sdk: 'flutter'
   flutter_svg: '^2.0.5'
-  rest_client: '^2.2.1+9'
+  rest_client: '^2.2.1+10'
 
 dev_dependencies: 
   flutter_test: 
