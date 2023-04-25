@@ -1,3 +1,8 @@
+## [1.0.2+4] - April 25, 2023
+
+* Automated dependency updates
+
+
 ## [1.0.2+3] - April 18, 2023
 
 * Automated dependency updates
@@ -121,6 +126,7 @@
 ## [0.9.0] - April 16th, 2022
 
 * Beta release
+
 
 
 
