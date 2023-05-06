@@ -470,21 +470,23 @@ class _ShowResponsePageState extends State<_ShowResponsePage> {
     }
 
     if (response == null) {
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('DISMISS'),
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('DISMISS'),
+              ),
+            ],
+            content: const Text(
+              'An error occurred when atempting to call the API',
             ),
-          ],
-          content: const Text(
-            'An error occurred when atempting to call the API',
+            title: const Text('Error'),
           ),
-          title: const Text('Error'),
-        ),
-      );
+        );
+      }
 
       if (mounted) {
         Navigator.of(context).pop(null);
