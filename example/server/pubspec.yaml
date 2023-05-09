@@ -1,13 +1,13 @@
 name: 'dynamic_service_example'
 description: 'An example of the Dart based dynamic_service'
-version: '1.0.0+8'
+version: '1.0.0+9'
 publish_to: 'none'
 
 environment: 
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies: 
-  args: '^2.4.0'
+  args: '^2.4.1'
   dynamic_service: 
     path: '../../'
   shelf_cors_headers: '^0.1.4'
