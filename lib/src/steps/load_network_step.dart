@@ -5,7 +5,6 @@ import 'package:json_class/json_class.dart';
 import 'package:logging/logging.dart';
 import 'package:rest_client/rest_client.dart' as rc;
 import 'package:template_expressions/template_expressions.dart';
-import 'package:yaon/yaon.dart';
 
 class LoadNetworkStep extends ServiceStep {
   LoadNetworkStep({
@@ -44,7 +43,7 @@ class LoadNetworkStep extends ServiceStep {
       requests.add(
         NetworkRequest.fromDynamic(
           json.decode(processed),
-          defaultId: (++index).toString(),
+          defaultVariable: (++index).toString(),
         ),
       );
     }
@@ -69,13 +68,16 @@ class LoadNetworkStep extends ServiceStep {
         try {
           final response = await rc.Client().execute(
             request: rcReq,
-            jsonResponse: request.processBody,
+            jsonResponse: false,
           );
 
           if (!async) {
-            var body = response.body is String
-                ? yaon.parse(response.body)
-                : response.body;
+            var body = response.body;
+            try {
+              body = utf8.decode(body);
+            } catch (e) {
+              // no-op
+            }
 
             if (body is String) {
               final template = Template(
@@ -84,7 +86,7 @@ class LoadNetworkStep extends ServiceStep {
               );
               body = template.process(context: context.variables);
             }
-            results[request.id] = {
+            results[request.variable] = {
               'body': body,
               'headers': response.headers,
               'statusCode': response.statusCode,

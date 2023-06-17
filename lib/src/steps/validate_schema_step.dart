@@ -1,5 +1,5 @@
 import 'package:dynamic_service/dynamic_service.dart';
-import 'package:json_schema2/json_schema2.dart';
+import 'package:json_schema2/json_schema.dart';
 import 'package:yaon/yaon.dart';
 
 class ValidateSchemaStep extends ServiceStep {
@@ -37,12 +37,12 @@ class ValidateSchemaStep extends ServiceStep {
       );
     }
 
-    final errors = JsonSchema.createSchema(schema).validateWithErrors(
+    final vResult = JsonSchema.create(schema).validate(
       yaon.parse(content),
     );
-    if (errors.isNotEmpty == true) {
+    if (vResult.errors.isNotEmpty == true) {
       var errorStr = 'Schema Error: \n';
-      for (var error in errors) {
+      for (var error in vResult.errors) {
         errorStr += ' * [${error.schemaPath}]: ${error.message}\n';
       }
 

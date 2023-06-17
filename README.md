@@ -83,7 +83,7 @@ Name          | Required | Type                 | Example                       
 
 ### create_jwt
 
-The `create_jwt` step create a JWT with either a `hs256` or `rs256` based signature.  The parameters 
+The `create_jwt` step create a JWT with either a `hs256` or `rs256` based signature.
 
 **Type**: `create_jwt`
 **Example**:
@@ -109,7 +109,7 @@ Parameters:
 
 Name                    | Required | Type                 | Example                                          | Description
 ------------------------|----------|----------------------|--------------------------------------------------|------------
-`expires`               | No       | [int]                | | Number of seconds 
+`expires`               | No       | `int`                | | Number of seconds 
 `key`                   | **Yes**  | [Boolean Expression] | [jwt.yaml](example/server/assets/steps/jwt.yaml) | Expression that determines whether to execute the `steps-true` or `steps-false` steps next.
 `keyId` \| `key-id`     | **Yes**  | [Step]\[\]           | [jwt.yaml](example/server/assets/steps/jwt.yaml) | Zero or more steps to execute when the expression evaluates to `false`.
 `keyType` \| `key-type` | **Yes**  | [Step]\[\]           | [jwt.yaml](example/server/assets/steps/jwt.yaml) | Zero or more steps to execute when the expression evaluates to `false`.
@@ -120,30 +120,165 @@ Name                    | Required | Type                 | Example             
 
 ### delay
 
+The `delay` step will delay the response between `min` and `max` milliseconds.
+
+**Type**: `delay`
+**Example**:
+```yaml
+- type: delay
+  with:
+    min: 1000
+    max: 5000
+```
+
+Parameters:
+
+Name  | Required | Type  | Example                                            | Description
+------|----------|-------|----------------------------------------------------|------------
+`min` | No       | `int` | [service.yaml](example/server/assets/service.yaml) | Minimum number of milliseconds to wait.
+`max` | No       | `int` | [service.yaml](example/server/assets/service.yaml) | Maximum number of milliseconds to wait.
+
+
 ---
 
 
 ### etag
+
+The `etag` step will put an `ETag` header on the response, and if the `If-None-Match` header matches the `ETag` then a `204` will be returned with an empty body
+
+**Type**: `etag`
+**Example**:
+```yaml
+- type: etag
+```
+
+Parameters:
+
+n/a
 
 ---
 
 
 ### for_each
 
+The `for_each` step will iterate over the given `input` and execute the `steps` for each input item either in series or in parallel.
+
+**Type**: `for_each`
+**Example**:
+```yaml
+- type: for_each
+  with:
+    input: ${array}
+    steps:
+      - type: delay
+        with:
+          min: 100
+          max: 300
+      - type: set_variables
+        with:
+          message: |
+            ${message + index.toString() + ': ' + variable.toString() + ': ' + request['body']}
+```
+
+Parameters:
+
+Name       | Required | Type            | Example                                                       | Description
+-----------|----------|-----------------|---------------------------------------------------------------|------------
+`input`    | **Yes**  | `List` or `Map` | [for_each.yaml](example/server/assets/services/for_each.yaml) | The list or map to iterate over.
+`parallel` | no       | `bool`          | [for_each.yaml](example/server/assets/services/for_each.yaml) | Set to `true` to iterate in parallel, defaults to `false`.
+`steps`    | **Yes**  | [Step]\[\]      | [for_each.yaml](example/server/assets/services/for_each.yaml) | The steps to excute for each iteration.
+
+
 ---
 
 
 ### load_network
+
+The `load_network` step will load from a one `request` or multiple `requests`
+
+**Type**: `load_network`
+**Example**:
+```yaml
+  - type: load_network
+    with:
+      requests:
+        - url: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/first_names.json
+          variable: first
+        - url: https://raw.githubusercontent.com/peiffer-innovations/dynamic_service/main/pages/last_names.json
+          variable: last
+```
+
+Parameters:
+
+Name       | Required | Type                  | Example                                                            | Description
+-----------|----------|-----------------------|--------------------------------------------------------------------|------------
+`async`    | no       | `bool`                | n/a                                                                | Send the network calls but do not wait for a response before continuing to the next step.
+`request`  | no       | [Network Request]     | n/a                                                                | The singular network request to make.  Either this or `requests` is required.
+`requests` | no       | [Network Request]\[\] | [random_names.yaml](example/server/assets/steps/random_names.yaml) | The list of network requests to make.  Either this or `request` is requred.
+`variable` | no       | `String`              | n/a                                                                | The variable name to put the responses on when not `async`.  Defaults to `load_network` if not set.
+
 
 ---
 
 
 ### parallel
 
+The `parallel` step execute all sub-steps in parallel rather than series.
+
+**Type**: `delay`
+**Example**:
+```yaml
+- type: parallel
+  with:
+    steps:
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+      - type: delay
+        with:
+          min: 500
+          max: 1000
+```
+
+Parameters:
+
+Name    | Required | Type       | Example                                            | Description
+--------|----------|------------|----------------------------------------------------|------------
+`steps` | **Yes**  | [Step]\[\] | [service.yaml](example/server/assets/service.yaml) | The steps to execute in parallel.
+
+
 ---
 
 
 ### set_response
+
+Parameters:
+
+Name           | Required | Type                  | Example                                            | Description
+---------------|----------|-----------------------|----------------------------------------------------|------------
+`body`         | no       | `dynamic`             | 
+`content-type` | no       | `String`              | [service.yaml](example/server/assets/service.yaml) | The steps to execute in parallel.
+`file`         | no       | `String`              |
+`headers`      | no       | `Map<String, String>` |
+`status`       | no       | `int`                 |
+`$ref`         | no
 
 ---
 
@@ -259,6 +394,38 @@ A JSON compatible `List<String>`, `Map<String, dynamic>` or JSON encoded string 
 
 ---
 
+### Network Request
+
+A descriptor for making a network call.
+
+**Properties**
+
+Name          | Required | Type                        | Description
+--------------|----------|-----------------------------|-------------
+`body`        | no       | `JSON`, `YAML`, or `String` | The body to send on the request.  May be `JSON`, `YAML`, or a plain `String`.
+`delay`       | no       | `int`                       | The number of milliseconds to wait before making the network call.
+`headers`     | no       | `Map<String, String>`       | The optional headers to send on the request.
+`method`      | no       | `String`                    | The HTTP method to use.  Defaults to `GET` if there is no body, and `POST` if a body exists.
+`url`         | **Yes**  | `String`                    | The URL of the network endpoint to call.
+`variable`    | no       | `String`                    | The variable identifier of the request.  If the step is not `async` then the [Network Response] from the call will be set in the variables.
+
+---
+
+### Network Response
+
+A descriptor for the results of a network call.
+
+**Properties**
+
+Name          | Required | Type                  | Description
+--------------|----------|-----------------------|-------------
+`body`        | **Yes**  | `dynamic`             | The response body.
+`headers`     | **Yes**  | `Map<String, String>` | The response headers.
+`statusCode`  | **Yes**  | `int`                 | The response status code.
+
+
+---
+
 ### Step
 
 ---
@@ -306,6 +473,8 @@ Can be either a [YAML Expression] or a [JSON Expression].
 [Boolean Expression]: #boolean-expression
 [Expression]: #expression
 [JSON Expression]: #json-expression
+[Network Request]: #network-request
+[Network Response]: #network-response
 [Step]: #step
 [Template]: #template
 [YAML Expression]: #yaml-expression
