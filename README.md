@@ -24,6 +24,8 @@
   - [Boolean Expression](#boolean-expression)
   - [Expression](#expression)
   - [JSON Expression](#json-expression)
+  - [Network Request](#network-request)
+  - [Network Response](#network-response)
   - [Step](#step)
   - [Template](#template)
   - [YAML Expression](#yaml-expression)
