@@ -1,7 +1,7 @@
 name: 'dynamic_service'
 description: 'A Dart based service for handling dynamic requests and responses'
 homepage: 'https://github.com/peiffer-innovations/dynamic_service'
-version: '1.0.2+12'
+version: '1.0.2+13'
 
 environment: 
   sdk: '>=3.0.0 <4.0.0'
@@ -10,7 +10,7 @@ dependencies:
   collection: '^1.16.0'
   crypto: '^3.0.1'
   encrypt: '^5.0.3'
-  http: '^1.1.0'
+  http: '^1.1.2'
   intl: '^0.18.1'
   jose: '^0.3.4'
   json_class: '^3.0.0+8'
