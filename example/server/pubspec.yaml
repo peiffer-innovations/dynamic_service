@@ -1,20 +1,20 @@
 name: 'dynamic_service_example'
 description: 'An example of the Dart based dynamic_service'
-version: '1.0.0+15'
+version: '1.0.0+16'
 publish_to: 'none'
 
 environment: 
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies: 
-  args: '^2.4.2'
+  args: '^2.5.0'
   dynamic_service: 
     path: '../../'
   shelf_cors_headers: '^0.1.5'
 
 dev_dependencies: 
-  build_runner: '^2.4.7'
+  build_runner: '^2.4.9'
   dependency_validator: '^3.2.3'
   functions_framework_builder: '^0.4.10'
-  test: '^1.24.9'
+  test: '^1.25.3'
   test_process: '^2.1.0'
