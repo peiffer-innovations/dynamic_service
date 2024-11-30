@@ -1,3 +1,5 @@
+**Archived**: No longer interested in maintaining this package.
+
 # dynamic_service
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
